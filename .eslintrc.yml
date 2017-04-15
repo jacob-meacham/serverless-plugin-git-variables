@@ -1,0 +1,5 @@
+---
+extends: [standard, plugin:ava/recommended]
+plugins: [ava]
+rules:
+  space-before-function-paren: ["error", "never"]
