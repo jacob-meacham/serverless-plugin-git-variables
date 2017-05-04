@@ -15,3 +15,9 @@ functions:
 plugins:
   - serverless-plugin-git-variables
 ```
+
+# Version History
+* 1.0.1
+  - list babel-runtime as a dependency
+* 1.0.0
+  - Initial release
