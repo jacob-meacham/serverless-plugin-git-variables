@@ -40,7 +40,6 @@
     "ci:coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
-    "deasync-promise": "1.0.1",
     "babel-runtime": "6.23.0"
   },
   "devDependencies": {
