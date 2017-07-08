@@ -17,6 +17,8 @@ plugins:
 ```
 
 # Version History
+* 2.0.0
+  - support Serverless >= 1.16.0
 * 1.0.1
   - list babel-runtime as a dependency
 * 1.0.0
