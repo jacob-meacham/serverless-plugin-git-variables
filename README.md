@@ -16,6 +16,11 @@ plugins:
   - serverless-plugin-git-variables
 ```
 
+# Serverless Version Support
+* If you're using serverless 1.12.x or below, use the 1.x.x version of this plugin.
+* This plugin is currently broken for serverless versions between 1.13 and 1.15 (inclusive).
+* If you're using serverless 1.16.x or above, use the 2.x.x version of this plugin.
+
 # Version History
 * 2.0.0
   - support Serverless >= 1.16.0
