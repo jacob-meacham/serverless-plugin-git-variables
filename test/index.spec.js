@@ -41,7 +41,7 @@ test('Rejects on bad key', async function(t) {
   await t.throws(sls.variables.populateService(), /Error: Git variable badKey is unknown.*/)
 })
 
-test.serial('Throws on bad git command', async function(t) {
+test.serial('Rejects on bad git command', async function(t) {
   fs.copySync('test/resources/simple_repo/git', `${t.context.tmpDir}/.git`)
   process.chdir(t.context.tmpDir)
 
@@ -65,4 +65,14 @@ test.serial('Inserts variables', async function(t) {
   t.is(sls.service.custom.branch, 'another_branch')
   t.is(sls.service.custom.describe, 'my_tag-1-g90440bd')
   t.is(sls.service.custom.describe2, 'my_tag-1-g90440bd')
+})
+
+test('Returns cached value as promise', async function(t) {
+  let serverless = new Serverless()
+  let vars = new ServerlessGitVariables(serverless, {})
+  let fakeTag = 'my_tag-2-c1023gh'
+  vars.resolvedValues['describe'] = fakeTag
+  await serverless.variables.getValueFromSource('git:describe').then(value => {
+    t.is(value, fakeTag)
+  })
 })

@@ -30,7 +30,7 @@ export default class ServerlessGitVariables {
     }
   }
 
-  _getValue(variable) {
+  async _getValue(variable) {
     if (this.resolvedValues[variable]) {
       return Promise.resolve(this.resolvedValues[variable])
     }
