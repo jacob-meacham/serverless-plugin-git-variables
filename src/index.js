@@ -1,5 +1,4 @@
 // TODO: Consider using nodegit instead
-import deasyncPromise from 'deasync-promise'
 import childProcess from 'child_process'
 
 const GIT_PREFIX = 'git'
@@ -24,19 +23,19 @@ export default class ServerlessGitVariables {
     serverless.variables.getValueFromSource = (variableString) => {
       if (variableString.startsWith(`${GIT_PREFIX}:`)) {
         const variable = variableString.split(`${GIT_PREFIX}:`)[1]
-        return this._getValueFromGitSync(variable)
+        return this._getValue(variable)
       }
 
       return delegate(variableString)
     }
   }
 
-  _getValueFromGitSync(variable) {
+  _getValue(variable) {
     if (this.resolvedValues[variable]) {
-      return this.resolvedValues[variable]
+      return new Promise(() => this.resolvedValues[variabled])
     }
 
-    return deasyncPromise(this._getValueFromGit(variable))
+    return this._getValueFromGit(variable)
   }
 
   async _getValueFromGit(variable) {

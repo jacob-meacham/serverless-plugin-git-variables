@@ -19,42 +19,38 @@ test.beforeEach(t => {
 })
 
 test.beforeEach(t => {
-  t.context.tmpDir = tmp.dirSync({ unsafeCleanup: true }).name
+  t.context.tmpDir = tmp.dirSync({unsafeCleanup: true}).name
 })
 
 test.afterEach.always(t => {
   process.chdir(t.context.initalDir)
 })
 
-test('Variables are passed through', t => {
+test('Variables are passed through', async function(t) {
   const sls = buildSls()
   sls.service.custom.myVar = 'myVar'
   sls.service.custom.myResoledVar = '${self:custom.myVar}' // eslint-disable-line
 
-  sls.variables.populateService()
+  await sls.variables.populateService()
   t.is(sls.service.custom.myResoledVar, 'myVar')
 })
 
-test('Throws on bad key', t => {
+test('Rejects on bad key', async function(t) {
   const sls = buildSls()
   sls.service.custom.myVar = '${git:badKey}' // eslint-disable-line
-  t.throws(() => {
-    sls.variables.populateService()
-  }, /Error: Git variable badKey is unknown.*/)
+  await t.throws(sls.variables.populateService(), /Error: Git variable badKey is unknown.*/)
 })
 
-test('Throws on bad git command', t => {
+test.serial('Throws on bad git command', async function(t) {
   fs.copySync('test/resources/simple_repo/git', `${t.context.tmpDir}/.git`)
   process.chdir(t.context.tmpDir)
 
   const sls = buildSls()
   sls.service.custom.describe = '${git:describe}' // eslint-disable-line
-  t.throws(() => {
-    sls.variables.populateService()
-  }, /Error: Command failed: git describe/)
+  await t.throws(sls.variables.populateService(), /Error: Command failed: git describe/)
 })
 
-test('Inserts variables', t => {
+test.serial('Inserts variables', async function(t) {
   fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
   process.chdir(t.context.tmpDir)
 
@@ -63,7 +59,7 @@ test('Inserts variables', t => {
   sls.service.custom.sha1 = '${git:sha1}' // eslint-disable-line
   sls.service.custom.branch = '${git:branch}' // eslint-disable-line
   sls.service.custom.describe2 = '${git:describe}' // eslint-disable-line
-  sls.variables.populateService()
+  await sls.variables.populateService()
 
   t.is(sls.service.custom.sha1, '90440bd')
   t.is(sls.service.custom.branch, 'another_branch')
