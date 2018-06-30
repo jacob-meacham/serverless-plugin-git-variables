@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/jacob-meacham/serverless-plugin-git-variables/badge.svg?branch=develop)](https://coveralls.io/github/jacob-meacham/serverless-plugin-git-variables?branch=develop)
 [![Build Status](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables.svg?branch=develop)](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables)
 
-Expose git variables (HEAD description, branch name, and short commit hash) to your serverless services.
+Expose git variables (HEAD description, branch name, short commit hash, and message) to your serverless services.
 
 # Usage
 ```yaml
@@ -22,6 +22,8 @@ plugins:
 * If you're using serverless 1.16.x or above, use the 2.x.x version of this plugin.
 
 # Version History
+* 2.1.0
+  - Add support for git message (Thanks to @campadrenalin)
 * 2.0.0
   - support Serverless >= 1.16.0
 * 1.0.1
