@@ -59,12 +59,14 @@ test.serial('Inserts variables', async t => {
   sls.service.custom.sha1 = '${git:sha1}' // eslint-disable-line
   sls.service.custom.branch = '${git:branch}' // eslint-disable-line
   sls.service.custom.describe2 = '${git:describe}' // eslint-disable-line
+  sls.service.custom.message = '${git:message}' // eslint-disable-line
   await sls.variables.populateService()
 
   t.is(sls.service.custom.sha1, '90440bd')
   t.is(sls.service.custom.branch, 'another_branch')
   t.is(sls.service.custom.describe, 'my_tag-1-g90440bd')
   t.is(sls.service.custom.describe2, 'my_tag-1-g90440bd')
+  t.is(sls.service.custom.message, 'Another commit')
 })
 
 test('Returns cached value as promise', async t => {
