@@ -22,6 +22,8 @@ plugins:
 * If you're using serverless 1.16.x or above, use the 2.x.x version of this plugin.
 
 # Version History
+* 2.1.1
+  - Fix packaging issue
 * 2.1.0
   - Add support for git message (Thanks to @campadrenalin)
 * 2.0.0
