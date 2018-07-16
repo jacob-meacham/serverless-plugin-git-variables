@@ -19,9 +19,12 @@ plugins:
 # Serverless Version Support
 * If you're using serverless 1.12.x or below, use the 1.x.x version of this plugin.
 * This plugin is currently broken for serverless versions between 1.13 and 1.15 (inclusive).
-* If you're using serverless 1.16.x or above, use the 2.x.x version of this plugin.
+* If you're using serverless 1.16.x or above, use the >=2.x.x version of this plugin.
 
 # Version History
+* 3.0.0
+  - Add support for long commit hash (Thanks to @e-e-e)
+  - backwards incompatible change: git describe now uses --always, so if there are not tags it returns a hash instead of failing (Thanks to @e-e-e)
 * 2.1.1
   - Fix packaging issue
 * 2.1.0
