@@ -42,7 +42,7 @@ export default class ServerlessGitVariables {
     let value = null
     switch (variable) {
       case 'describe':
-        value = await _exec('git describe')
+        value = await _exec('git describe --always')
         break
       case 'sha1':
         value = await _exec('git rev-parse --short HEAD')
