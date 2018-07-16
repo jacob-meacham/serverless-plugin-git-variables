@@ -42,12 +42,10 @@ test('Rejects on bad key', async t => {
 })
 
 test.serial('Rejects on bad git command', async t => {
-  fs.copySync('test/resources/simple_repo/git', `${t.context.tmpDir}/.git`)
   process.chdir(t.context.tmpDir)
-
   const sls = buildSls()
-  sls.service.custom.describe = '${git:describe}' // eslint-disable-line
-  await t.throws(sls.variables.populateService(), /Error: Command failed: git describe/)
+  sls.service.custom.describe = '${git:message}' // eslint-disable-line
+  await t.throws(sls.variables.populateService(), /Not a git repository/)
 })
 
 test.serial('Inserts variables', async t => {
@@ -57,12 +55,14 @@ test.serial('Inserts variables', async t => {
   const sls = buildSls()
   sls.service.custom.describe = '${git:describe}' // eslint-disable-line
   sls.service.custom.sha1 = '${git:sha1}' // eslint-disable-line
+  sls.service.custom.commit = '${git:commit}' // eslint-disable-line
   sls.service.custom.branch = '${git:branch}' // eslint-disable-line
   sls.service.custom.describe2 = '${git:describe}' // eslint-disable-line
   sls.service.custom.message = '${git:message}' // eslint-disable-line
   await sls.variables.populateService()
 
   t.is(sls.service.custom.sha1, '90440bd')
+  t.is(sls.service.custom.commit, '90440bdc8eb3b2fa20bc578f411cf4b725ae0a25')
   t.is(sls.service.custom.branch, 'another_branch')
   t.is(sls.service.custom.describe, 'my_tag-1-g90440bd')
   t.is(sls.service.custom.describe2, 'my_tag-1-g90440bd')
