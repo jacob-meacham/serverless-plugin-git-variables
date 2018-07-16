@@ -42,12 +42,10 @@ test('Rejects on bad key', async t => {
 })
 
 test.serial('Rejects on bad git command', async t => {
-  fs.copySync('test/resources/simple_repo/git', `${t.context.tmpDir}/.git`)
   process.chdir(t.context.tmpDir)
-
   const sls = buildSls()
-  sls.service.custom.describe = '${git:describe}' // eslint-disable-line
-  await t.throws(sls.variables.populateService(), /Error: Command failed: git describe/)
+  sls.service.custom.describe = '${git:message}' // eslint-disable-line
+  await t.throws(sls.variables.populateService(), /Not a git repository/)
 })
 
 test.serial('Inserts variables', async t => {
