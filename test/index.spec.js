@@ -78,3 +78,36 @@ test('Returns cached value as promise', async t => {
     t.is(value, fakeTag)
   })
 })
+
+test('Env variables defined', async t => {
+  fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
+  process.chdir(t.context.tmpDir)
+
+  const func = {
+    name: 'myFunction',
+    environment: {}
+  }
+
+  const fakeServerless = {
+    service: {
+      getAllFunctions: () => [func.name],
+      getFunction: name => func
+    },
+    variables: {
+      getValueFromSource: () => 'fake'
+    }
+  }
+
+  const plugin = new ServerlessGitVariables(fakeServerless, {})
+  await plugin.exportGitVariables()
+
+  t.is(func.environment.GIT_COMMIT_SHORT, '90440bd')
+  t.is(func.environment.GIT_COMMIT_LONG, '90440bdc8eb3b2fa20bc578f411cf4b725ae0a25')
+  t.is(func.environment.GIT_BRANCH, 'another_branch')
+  t.is(func.environment.GIT_IS_DIRTY, 'true')
+
+  t.is(func.tags.GIT_COMMIT_SHORT, '90440bd')
+  t.is(func.tags.GIT_COMMIT_LONG, '90440bdc8eb3b2fa20bc578f411cf4b725ae0a25')
+  t.is(func.tags.GIT_BRANCH, 'another_branch')
+  t.is(func.tags.GIT_IS_DIRTY, 'true')
+})

@@ -17,6 +17,7 @@ async function _exec(cmd, options = { timeout: 1000 }) {
 
 export default class ServerlessGitVariables {
   constructor(serverless, options) {
+    this.serverless = serverless
     this.resolvedValues = {}
     const delegate = serverless.variables.getValueFromSource.bind(serverless.variables)
 
@@ -27,6 +28,11 @@ export default class ServerlessGitVariables {
       }
 
       return delegate(variableString)
+    }
+    this.hooks = {
+      'after:package:initialize': this.exportGitVariables.bind(this),
+      'before:offline:start': this.exportGitVariables.bind(this),
+      'before:offline:start:init': this.exportGitVariables.bind(this)
     }
   }
 
@@ -56,6 +62,9 @@ export default class ServerlessGitVariables {
       case 'message':
         value = await _exec('git log -1 --pretty=%B')
         break
+      case 'isDirty':
+        value = await _exec('git write-tree').then(writeTree => _exec(`git diff-index ${writeTree} --`)).then(changes => `${changes.length > 0}`)
+        break
       default:
         throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'sha1', 'commit', 'branch', 'message'`)
     }
@@ -68,5 +77,37 @@ export default class ServerlessGitVariables {
     // Cache before returning
     this.resolvedValues[variable] = value
     return value
+  }
+
+  exportGitVariables() {
+    const promises = this.serverless.service.getAllFunctions().map((functionName) => {
+      return Promise.all([
+        this._getValue('sha1'),
+        this._getValue('commit'),
+        this._getValue('branch'),
+        this._getValue('isDirty')
+      ]).then(([sha1, commit, branch, isDirty]) => {
+        const func = this.serverless.service.getFunction(functionName)
+        this.exportGitVariable(func, 'GIT_COMMIT_SHORT', sha1)
+        this.exportGitVariable(func, 'GIT_COMMIT_LONG', commit)
+        this.exportGitVariable(func, 'GIT_BRANCH', branch)
+        this.exportGitVariable(func, 'GIT_IS_DIRTY', isDirty)
+      })
+    })
+    return Promise.all(promises)
+  }
+
+  exportGitVariable(func, variableName, gitValue) {
+    if (!func.environment[variableName]) {
+      func.environment[variableName] = gitValue
+    }
+
+    if (!func.tags) {
+      func.tags = {}
+    }
+
+    if (!func.tags[variableName]) {
+      func.tags[variableName] = gitValue
+    }
   }
 }

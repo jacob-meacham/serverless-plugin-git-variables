@@ -2,7 +2,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/jacob-meacham/serverless-plugin-git-variables/badge.svg?branch=develop)](https://coveralls.io/github/jacob-meacham/serverless-plugin-git-variables?branch=develop)
 [![Build Status](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables.svg?branch=develop)](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables)
 
-Expose git variables (HEAD description, branch name, short commit hash, and message) to your serverless services.
+Expose git variables (HEAD description, branch name, short commit hash, message, and if the local repo has changed files) to your serverless services.
+Moreover, it adds GIT related environment variables and tags (GIT_COMMIT_SHORT, GIT_COMMIT_LONG, GIT_BRANCH, GIT_IS_DIRTY) for each defined function in the serverless file.
 
 # Usage
 ```yaml
