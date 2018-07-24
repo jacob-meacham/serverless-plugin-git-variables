@@ -63,7 +63,9 @@ export default class ServerlessGitVariables {
         value = await _exec('git log -1 --pretty=%B')
         break
       case 'isDirty':
-        value = await _exec('git write-tree').then(writeTree => _exec(`git diff-index ${writeTree} --`)).then(changes => `${changes.length > 0}`)
+        const writeTree = await _exec('git write-tree')
+        const changes = await _exec(`git diff-index ${writeTree} --`)
+        value = `${changes.length > 0}`
         break
       default:
         throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'sha1', 'commit', 'branch', 'message'`)
@@ -80,6 +82,11 @@ export default class ServerlessGitVariables {
   }
 
   exportGitVariables() {
+    const exportGitVariables = this.serverless.service.custom && this.serverless.service.custom.exportGitVariables
+    if (exportGitVariables === false) {
+      return Promise.resolve()
+    }
+
     const promises = this.serverless.service.getAllFunctions().map((functionName) => {
       return Promise.all([
         this._getValue('sha1'),
