@@ -105,6 +105,10 @@ export default class ServerlessGitVariables {
   }
 
   exportGitVariable(func, variableName, gitValue) {
+    if (!func.environment) {
+      func.environment = {}
+    }
+
     if (!func.environment[variableName]) {
       func.environment[variableName] = gitValue
     }
