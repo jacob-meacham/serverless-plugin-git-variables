@@ -28,8 +28,10 @@ plugins:
 * If you're using serverless 1.16.x or above, use the >=2.x.x version of this plugin.
 
 # Version History
+* 3.1.1
+  - Fix issue that occurs if a function has no environment specified (Thanks to @arnaudh-nutonomy)
 * 3.1.0
-  - Also adds environment variables that are accessible at runtime (Thanks to @chechu)
+  - Plugin now also adds environment variables that are accessible at runtime (Thanks to @chechu)
 * 3.0.0
   - Add support for long commit hash (Thanks to @e-e-e)
   - backwards incompatible change: git describe now uses --always, so if there are not tags it returns a hash instead of failing (Thanks to @e-e-e)
