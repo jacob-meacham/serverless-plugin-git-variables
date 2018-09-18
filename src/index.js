@@ -71,7 +71,7 @@ export default class ServerlessGitVariables {
         value = `${changes.length > 0}`
         break
       default:
-        throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'sha1', 'commit', 'branch', 'message'`)
+        throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message'`)
     }
 
     // TODO: Figure out why if I don't log, the deasync promise
