@@ -18,6 +18,10 @@ functions:
     name: ${self:provider.stage}-${self:service}-process-event-batch
     description: ${git:branch} - ${git:describe} - ${git:sha1}
 
+  processEventBatch2:
+    name: ${self:provider.stage}-${self:service}-process-event-batch-2
+    description: ${git:describeLight} - Dirty: ${git:isDirty}
+
 plugins:
   - serverless-plugin-git-variables
 ```
