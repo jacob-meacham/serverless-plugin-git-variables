@@ -26,6 +26,14 @@ plugins:
   - serverless-plugin-git-variables
 ```
 
+## describe and describeLight
+The describe (`${git:describe}`) and the describeLight (`${git:describeLight}`) variables are both used to return the most recent tag of the repo. However the difference is that whilst `describe` evaluates to `git describe --always`, the `describeLight` variable evaluates to `git describe --always --tags`.  
+`--always` will ensure that if no tags are present, the commit hash is shown as a fallback option. (See [git describe documentation](https://git-scm.com/docs/git-describe) for more information).
+
+Annotated tags are shown by both `describe` and `describeLight`, only `describeLight` will show lightweight tags (such as those generated when using GitHub's releases feature).
+
+For more information on annotated and lightweight tags go to the [git documentation on tagging](https://git-scm.com/book/en/v2/Git-Basics-Tagging).
+
 # Serverless Version Support
 * If you're using serverless 1.12.x or below, use the 1.x.x version of this plugin.
 * This plugin is currently broken for serverless versions between 1.13 and 1.15 (inclusive).
