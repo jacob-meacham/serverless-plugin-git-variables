@@ -24,6 +24,12 @@ functions:
 
 plugins:
   - serverless-plugin-git-variables
+
+resources:
+  Description: >
+    ${self:service} ${git:branch}:${git:sha1}
+    https://github.com/jacob-meacham/serverless-plugin-git-variables
+    ${git:message}
 ```
 
 ## describe and describeLight
