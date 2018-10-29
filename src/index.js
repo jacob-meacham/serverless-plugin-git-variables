@@ -65,13 +65,16 @@ export default class ServerlessGitVariables {
       case 'message':
         value = await _exec('git log -1 --pretty=%B')
         break
+      case 'npmVersion':
+        value = require('../../../package.json').version;
+        break;
       case 'isDirty':
         const writeTree = await _exec('git write-tree')
         const changes = await _exec(`git diff-index ${writeTree} --`)
         value = `${changes.length > 0}`
         break
       default:
-        throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message'`)
+        throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'npmVersion', 'sha1', 'commit', 'branch', 'message'`)
     }
 
     // TODO: Figure out why if I don't log, the deasync promise

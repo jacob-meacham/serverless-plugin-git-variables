@@ -27,7 +27,7 @@ plugins:
 
 resources:
   Description: >
-    ${self:service} ${git:branch}:${git:sha1}
+    ${self:service} ${git:npmVersion} ${git:branch}:${git:sha1}
     https://github.com/jacob-meacham/serverless-plugin-git-variables
     ${git:message}
 ```
