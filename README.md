@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables.svg?branch=develop)](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables)
 
 Expose git variables (HEAD description, branch name, short commit hash, message, and if the local repo has changed files) to your serverless services.
-Moreover, it adds GIT related environment variables and tags (GIT_COMMIT_SHORT, GIT_COMMIT_LONG, GIT_BRANCH, GIT_IS_DIRTY) for each defined function in the serverless file. You can disable this by adding the following custom variable in your serverless.yml file:
+Moreover, it adds GIT related environment variables and tags (GIT_COMMIT_SHORT, GIT_COMMIT_LONG, GIT_BRANCH, GIT_IS_DIRTY, GIT_REPOSITORY) for each defined function in the serverless file. You can disable this by adding the following custom variable in your serverless.yml file:
 
 ```
 custom:
@@ -16,14 +16,20 @@ custom:
 functions:
   processEventBatch:
     name: ${self:provider.stage}-${self:service}-process-event-batch
-    description: ${git:branch} - ${git:describe} - ${git:sha1}
+    description: ${git:repository} - ${git:branch} - ${git:describe} - ${git:sha1}
 
   processEventBatch2:
     name: ${self:provider.stage}-${self:service}-process-event-batch-2
-    description: ${git:describeLight} - ${git:branch}
+    description: ${git:repository} - ${git:describeLight} - ${git:branch}
 
 plugins:
   - serverless-plugin-git-variables
+
+resources:
+  Description: >
+    ${self:service} ${git:branch}:${git:sha1}
+    https://github.com/jacob-meacham/serverless-plugin-git-variables
+    ${git:message}
 ```
 
 ## describe and describeLight
@@ -40,6 +46,8 @@ For more information on annotated and lightweight tags go to the [git documentat
 * If you're using serverless 1.16.x or above, use the >=2.x.x version of this plugin.
 
 # Version History
+* 3.3.0
+  - Added repository name (Thanks to @iDVB)
 * 3.2.0
   - Added a describeLight git variable, which allows use of lightweight tags (Thanks to @domroutley)
 * 3.1.1

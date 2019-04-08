@@ -60,6 +60,7 @@ test.serial('Inserts variables', async t => {
   sls.service.custom.describe2 = '${git:describe}' // eslint-disable-line
   sls.service.custom.message = '${git:message}' // eslint-disable-line
   sls.service.custom.describeLight = '${git:describeLight}' // eslint-disable-line
+  sls.service.custom.repository = '${git:repository}' // eslint-disable-line
   await sls.variables.populateService()
 
   t.is(sls.service.custom.sha1, '90440bd')

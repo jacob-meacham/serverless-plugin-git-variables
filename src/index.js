@@ -70,8 +70,11 @@ export default class ServerlessGitVariables {
         const changes = await _exec(`git diff-index ${writeTree} --`)
         value = `${changes.length > 0}`
         break
+      case 'repository':
+        value = await _exec('basename `git rev-parse --show-toplevel`')
+        break
       default:
-        throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message'`)
+        throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message', 'repository'`)
     }
 
     // TODO: Figure out why if I don't log, the deasync promise
@@ -95,13 +98,15 @@ export default class ServerlessGitVariables {
         this._getValue('sha1'),
         this._getValue('commit'),
         this._getValue('branch'),
-        this._getValue('isDirty')
-      ]).then(([sha1, commit, branch, isDirty]) => {
+        this._getValue('isDirty'),
+        this._getValue('repository')
+      ]).then(([sha1, commit, branch, isDirty, repository]) => {
         const func = this.serverless.service.getFunction(functionName)
         this.exportGitVariable(func, 'GIT_COMMIT_SHORT', sha1)
         this.exportGitVariable(func, 'GIT_COMMIT_LONG', commit)
         this.exportGitVariable(func, 'GIT_BRANCH', branch)
         this.exportGitVariable(func, 'GIT_IS_DIRTY', isDirty)
+        this.exportGitVariable(func, 'GIT_REPOSITORY', repository)
       })
     })
     return Promise.all(promises)
