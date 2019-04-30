@@ -46,6 +46,8 @@ For more information on annotated and lightweight tags go to the [git documentat
 * If you're using serverless 1.16.x or above, use the >=2.x.x version of this plugin.
 
 # Version History
+* 3.3.1
+  - Changed approach for finding repository name, to fix plugin on Windows
 * 3.3.0
   - Added repository name (Thanks to @iDVB)
 * 3.2.0

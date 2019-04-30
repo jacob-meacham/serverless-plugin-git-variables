@@ -1,5 +1,6 @@
 // TODO: Consider using nodegit instead
 import childProcess from 'child_process'
+import path from 'path'
 
 const GIT_PREFIX = 'git'
 
@@ -71,7 +72,8 @@ export default class ServerlessGitVariables {
         value = `${changes.length > 0}`
         break
       case 'repository':
-        value = await _exec('basename `git rev-parse --show-toplevel`')
+        const pathName = await _exec('git rev-parse --show-toplevel')
+        value = path.basename(pathName)
         break
       default:
         throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message', 'repository'`)
