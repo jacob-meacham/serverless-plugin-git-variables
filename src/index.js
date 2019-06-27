@@ -109,6 +109,9 @@ export default class ServerlessGitVariables {
 
       const isDirty = await this._getValue('isDirty')
       this.exportGitVariable(func, 'GIT_IS_DIRTY', isDirty)
+
+      const repository = await this._getValue('repository')
+      this.exportGitVariable(func, 'GIT_REPOSITORY', repository)
     }
   }
 
