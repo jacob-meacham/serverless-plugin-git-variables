@@ -94,23 +94,20 @@ export default class ServerlessGitVariables {
     if (exportGitVariables === false) {
       return
     }
+    
+    const sha1 = await this._getValue('sha1')
+    const commit = await this._getValue('commit')
+    const branch = await this._getValue('branch')
+    const isDirty = await this._getValue('isDirty')
+    const repository = await this._getValue('repository')
 
     for (const functionName of this.serverless.service.getAllFunctions()) {
       const func = this.serverless.service.getFunction(functionName)
 
-      const sha1 = await this._getValue('sha1')
-      this.exportGitVariable(func, 'GIT_COMMIT_SHORT', sha1)
-
-      const commit = await this._getValue('commit')
+      this.exportGitVariable(func, 'GIT_COMMIT_SHORT', sha1)      
       this.exportGitVariable(func, 'GIT_COMMIT_LONG', commit)
-
-      const branch = await this._getValue('branch')
       this.exportGitVariable(func, 'GIT_BRANCH', branch)
-
-      const isDirty = await this._getValue('isDirty')
       this.exportGitVariable(func, 'GIT_IS_DIRTY', isDirty)
-
-      const repository = await this._getValue('repository')
       this.exportGitVariable(func, 'GIT_REPOSITORY', repository)
     }
   }
