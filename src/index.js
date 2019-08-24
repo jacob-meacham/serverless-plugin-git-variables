@@ -77,9 +77,13 @@ export default class ServerlessGitVariables {
       case 'sha1':
         value = await _exec('git rev-parse --short HEAD')
         break
-      case 'commit':
-        value = await _exec('git rev-parse HEAD')
+      case 'commit': {
+        const gitRepoDir = await this._getGitRepoDir()
+        const repo = await Git.Repository.open(gitRepoDir)
+        const commit = await repo.getHeadCommit()
+        value = commit.sha()
         break
+      }
       case 'branch':
         value = await _exec('git rev-parse --abbrev-ref HEAD')
         break
