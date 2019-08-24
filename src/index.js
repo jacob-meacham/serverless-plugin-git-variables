@@ -54,7 +54,7 @@ export default class ServerlessGitVariables {
         return hasGit && directory
       }, {type: 'directory'})
     }
-    return this.gitRepoDir
+    return this.gitRepoDir || process.cwd()
   }
 
   async _getValue(variable) {
@@ -87,9 +87,13 @@ export default class ServerlessGitVariables {
       case 'branch':
         value = await _exec('git rev-parse --abbrev-ref HEAD')
         break
-      case 'message':
-        value = await _exec('git log -1 --pretty=%B')
+      case 'message': {
+        const gitRepoDir = await this._getGitRepoDir()
+        const repo = await Git.Repository.open(gitRepoDir)
+        const commit = await repo.getHeadCommit()
+        value = (await commit.message() || '').trim()
         break
+      }
       case 'isDirty': {
         const gitRepoDir = await this._getGitRepoDir()
         const repo = await Git.Repository.open(gitRepoDir)
