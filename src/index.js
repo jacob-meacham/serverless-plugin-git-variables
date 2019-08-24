@@ -84,9 +84,13 @@ export default class ServerlessGitVariables {
         value = commit.sha()
         break
       }
-      case 'branch':
-        value = await _exec('git rev-parse --abbrev-ref HEAD')
+      case 'branch': {
+        const gitRepoDir = await this._getGitRepoDir()
+        const repo = await Git.Repository.open(gitRepoDir)
+        const ref = await repo.getCurrentBranch()
+        value = ref.shorthand()
         break
+      }
       case 'message': {
         const gitRepoDir = await this._getGitRepoDir()
         const repo = await Git.Repository.open(gitRepoDir)
