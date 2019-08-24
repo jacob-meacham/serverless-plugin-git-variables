@@ -2,6 +2,7 @@ import test from 'ava'
 import process from 'process'
 import tmp from 'tmp'
 import fs from 'fs-extra'
+import path from 'path'
 import Serverless from 'serverless'
 
 import ServerlessGitVariables from '../src'
@@ -51,6 +52,7 @@ test.serial('Rejects on bad git command', async t => {
 test.serial('Inserts variables', async t => {
   fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
   process.chdir(t.context.tmpDir)
+  const currentDir = path.basename(t.context.tmpDir)
 
   const sls = buildSls()
   sls.service.custom.describe = '${git:describe}' // eslint-disable-line
@@ -70,6 +72,7 @@ test.serial('Inserts variables', async t => {
   t.is(sls.service.custom.describe2, 'my_tag-1-g90440bd')
   t.is(sls.service.custom.message, 'Another commit')
   t.is(sls.service.custom.describeLight, 'my_tag-1-g90440bd')
+  t.is(sls.service.custom.repository, currentDir)
 })
 
 test('Returns cached value as promise', async t => {

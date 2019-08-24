@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "babel-runtime": "6.23.0",
+    "find-up": "^4.1.0",
     "nodegit": "^0.25.1"
   },
   "devDependencies": {

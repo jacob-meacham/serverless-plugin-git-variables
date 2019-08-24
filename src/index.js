@@ -1,6 +1,8 @@
+'use strict'
 // TODO: Consider using nodegit instead
 import childProcess from 'child_process'
 import path from 'path'
+import findUp from 'find-up'
 import Git from 'nodegit'
 
 const GIT_PREFIX = 'git'
@@ -33,11 +35,26 @@ export default class ServerlessGitVariables {
 
       return delegate(variableString)
     }
+
+    this.gitRepoDir = null
+
     this.hooks = {
       'after:package:initialize': this.exportGitVariables.bind(this),
       'before:offline:start': this.exportGitVariables.bind(this),
       'before:offline:start:init': this.exportGitVariables.bind(this)
     }
+  }
+
+  async _getGitRepoDir() {
+    if (!this.gitRepoDir) {
+      // Source = find-up readme:
+      //   https://github.com/sindresorhus/find-up
+      this.gitRepoDir = await findUp(async directory => {
+        const hasGit = await findUp.exists(path.join(directory, '.git'))
+        return hasGit && directory
+      }, {type: 'directory'})
+    }
+    return this.gitRepoDir
   }
 
   async _getValue(variable) {
@@ -69,16 +86,20 @@ export default class ServerlessGitVariables {
       case 'message':
         value = await _exec('git log -1 --pretty=%B')
         break
-      case 'isDirty':
-        const repo = await Git.Repository.open(process.cwd())
+      case 'isDirty': {
+        const gitRepoDir = await this._getGitRepoDir()
+        const repo = await Git.Repository.open(gitRepoDir)
         const changes = await repo.getStatus()
-        DEBUG && verboseIsDirty(changes)
+        DEBUG && await verboseIsDirty(changes)
         value = `${changes.length > 0}`
         break
-      case 'repository':
-        const pathName = await _exec('git rev-parse --show-toplevel')
-        value = path.basename(pathName)
+      }
+      case 'repository': {
+        const gitRepoDir = await this._getGitRepoDir()
+        DEBUG && await verboseRepository(gitRepoDir)
+        value = path.basename(gitRepoDir)
         break
+      }
       default:
         throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message', 'repository'`)
     }
@@ -135,7 +156,7 @@ export default class ServerlessGitVariables {
   }
 }
 
-function verboseIsDirty(changes) {
+async function verboseIsDirty(changes) {
   console.log('isDirty checking', process.cwd())
   // console.log(await _exec('ls -la'))
   // console.log(await _exec('git status --porcelain'))
@@ -144,6 +165,12 @@ function verboseIsDirty(changes) {
   } else {
     console.log('  no changes')
   }
+}
+
+async function verboseRepository(gitRepoDir) {
+  console.log('Repository location by method:')
+  console.log('  git rev-parse:', await _exec('git rev-parse --show-toplevel'))
+  console.log('  find-up:      ', gitRepoDir)
 }
 
 // Utility function to format results of getStatus()
