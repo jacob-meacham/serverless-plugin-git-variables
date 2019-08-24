@@ -1,8 +1,11 @@
 // TODO: Consider using nodegit instead
 import childProcess from 'child_process'
 import path from 'path'
+import Git from 'nodegit'
 
 const GIT_PREFIX = 'git'
+
+const DEBUG = false
 
 async function _exec(cmd, options = { timeout: 1000 }) {
   return new Promise((resolve, reject) => {
@@ -67,8 +70,9 @@ export default class ServerlessGitVariables {
         value = await _exec('git log -1 --pretty=%B')
         break
       case 'isDirty':
-        const writeTree = await _exec('git write-tree')
-        const changes = await _exec(`git diff-index ${writeTree} --`)
+        const repo = await Git.Repository.open(process.cwd())
+        const changes = await repo.getStatus()
+        DEBUG && verboseIsDirty(changes)
         value = `${changes.length > 0}`
         break
       case 'repository':
@@ -129,4 +133,27 @@ export default class ServerlessGitVariables {
       func.tags[variableName] = gitValue
     }
   }
+}
+
+function verboseIsDirty(changes) {
+  console.log('isDirty checking', process.cwd())
+  // console.log(await _exec('ls -la'))
+  // console.log(await _exec('git status --porcelain'))
+  if (changes.length > 0) {
+    console.log('  changes:', changes.map(file => `${file.path()} - ${statusToText(file)}`))
+  } else {
+    console.log('  no changes')
+  }
+}
+
+// Utility function to format results of getStatus()
+function statusToText(status) {
+  var words = []
+  if (status.isNew()) { words.push('NEW') }
+  if (status.isModified()) { words.push('MODIFIED') }
+  if (status.isTypechange()) { words.push('TYPECHANGE') }
+  if (status.isRenamed()) { words.push('RENAMED') }
+  if (status.isIgnored()) { words.push('IGNORED') }
+
+  return words.join(' ')
 }

@@ -82,6 +82,30 @@ test('Returns cached value as promise', async t => {
   })
 })
 
+test.serial('isDirty variable works as expected', async t => {
+  fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
+  process.chdir(t.context.tmpDir)
+
+  let func = {
+    name: 'myFunction',
+    environment: {}
+  }
+  let plugin = new ServerlessGitVariables(generateFakeServerless(func), {})
+  await plugin.exportGitVariables()
+  t.is(func.tags.GIT_IS_DIRTY, 'false')
+
+  const filename = `${t.context.tmpDir}/_my_new_file.txt`
+  touchFile(filename)
+
+  func = {
+    name: 'myFunction',
+    environment: {}
+  }
+  plugin = new ServerlessGitVariables(generateFakeServerless(func), {})
+  await plugin.exportGitVariables()
+  t.is(func.tags.GIT_IS_DIRTY, 'true')
+})
+
 test.serial('Env variables defined', async t => {
   fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
   process.chdir(t.context.tmpDir)
@@ -90,18 +114,7 @@ test.serial('Env variables defined', async t => {
     name: 'myFunction',
     environment: {}
   }
-
-  const fakeServerless = {
-    service: {
-      getAllFunctions: () => [func.name],
-      getFunction: name => func
-    },
-    variables: {
-      getValueFromSource: () => 'fake'
-    }
-  }
-
-  const plugin = new ServerlessGitVariables(fakeServerless, {})
+  const plugin = new ServerlessGitVariables(generateFakeServerless(func), {})
   await plugin.exportGitVariables()
 
   t.is(func.environment.GIT_COMMIT_SHORT, '90440bd')
@@ -123,17 +136,7 @@ test.serial('Disabling export of env variables', async t => {
     name: 'myFunction',
     environment: {}
   }
-
-  const fakeServerless = {
-    service: {
-      getAllFunctions: () => [func.name],
-      getFunction: name => func,
-      custom: { exportGitVariables: false }
-    },
-    variables: {
-      getValueFromSource: () => 'fake'
-    }
-  }
+  const fakeServerless = generateFakeServerless(func, { exportGitVariables: false })
   const plugin = new ServerlessGitVariables(fakeServerless, {})
   await plugin.exportGitVariables()
 
@@ -144,3 +147,45 @@ test.serial('Disabling export of env variables', async t => {
 
   t.is(func.tags, undefined)
 })
+
+/**
+ * Make a fake 'serverless' object for use during testing.
+ */
+function generateFakeServerless(func, custom) {
+  const fakeServerless = {
+    service: {
+      getAllFunctions: () => [func.name],
+      getFunction: name => func
+    },
+    variables: {
+      getValueFromSource: () => 'fake'
+    }
+  }
+  if (custom) {
+    fakeServerless.service.custom = custom
+  }
+
+  return fakeServerless
+}
+
+/**
+ * Reset file modified time like *nix 'touch'.
+ * Creates file if does not exist.
+ *
+ * Source:
+ *   https://remarkablemark.org/blog/2017/12/17/touch-file-nodejs/
+ *
+ * @param {String} filename
+ */
+function touchFile(filename) {
+  if (!filename) {
+    throw new Error('[touchFile] missing required param \'filename\'')
+  }
+
+  const time = new Date()
+  try {
+    fs.utimeSync(filename, time, time)
+  } catch (ex) {
+    fs.closeSync(fs.openSync(filename, 'w'))
+  }
+}
