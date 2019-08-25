@@ -7,7 +7,7 @@ import Git from 'nodegit'
 
 const GIT_PREFIX = 'git'
 
-const DEBUG = false
+// const DEBUG = false
 
 async function _exec(cmd, options = { timeout: 1000 }) {
   return new Promise((resolve, reject) => {
@@ -102,13 +102,13 @@ export default class ServerlessGitVariables {
         const gitRepoDir = await this._getGitRepoDir()
         const repo = await Git.Repository.open(gitRepoDir)
         const changes = await repo.getStatus()
-        DEBUG && await verboseIsDirty(changes)
+        // DEBUG && await verboseIsDirty(changes)
         value = `${changes.length > 0}`
         break
       }
       case 'repository': {
         const gitRepoDir = await this._getGitRepoDir()
-        DEBUG && await verboseRepository(gitRepoDir)
+        // DEBUG && await verboseRepository(gitRepoDir)
         value = path.basename(gitRepoDir)
         break
       }
@@ -168,31 +168,31 @@ export default class ServerlessGitVariables {
   }
 }
 
-async function verboseIsDirty(changes) {
-  console.log('isDirty checking', process.cwd())
-  // console.log(await _exec('ls -la'))
-  // console.log(await _exec('git status --porcelain'))
-  if (changes.length > 0) {
-    console.log('  changes:', changes.map(file => `${file.path()} - ${statusToText(file)}`))
-  } else {
-    console.log('  no changes')
-  }
-}
-
-async function verboseRepository(gitRepoDir) {
-  console.log('Repository location by method:')
-  console.log('  git rev-parse:', await _exec('git rev-parse --show-toplevel'))
-  console.log('  find-up:      ', gitRepoDir)
-}
-
+// async function verboseIsDirty(changes) {
+//   console.log('isDirty checking', process.cwd())
+//   // console.log(await _exec('ls -la'))
+//   // console.log(await _exec('git status --porcelain'))
+//   if (changes.length > 0) {
+//     console.log('  changes:', changes.map(file => `${file.path()} - ${statusToText(file)}`))
+//   } else {
+//     console.log('  no changes')
+//   }
+// }
+//
+// async function verboseRepository(gitRepoDir) {
+//   console.log('Repository location by method:')
+//   console.log('  git rev-parse:', await _exec('git rev-parse --show-toplevel'))
+//   console.log('  find-up:      ', gitRepoDir)
+// }
+//
 // Utility function to format results of getStatus()
-function statusToText(status) {
-  var words = []
-  if (status.isNew()) { words.push('NEW') }
-  if (status.isModified()) { words.push('MODIFIED') }
-  if (status.isTypechange()) { words.push('TYPECHANGE') }
-  if (status.isRenamed()) { words.push('RENAMED') }
-  if (status.isIgnored()) { words.push('IGNORED') }
-
-  return words.join(' ')
-}
+// function statusToText(status) {
+//   var words = []
+//   if (status.isNew()) { words.push('NEW') }
+//   if (status.isModified()) { words.push('MODIFIED') }
+//   if (status.isTypechange()) { words.push('TYPECHANGE') }
+//   if (status.isRenamed()) { words.push('RENAMED') }
+//   if (status.isIgnored()) { words.push('IGNORED') }
+//
+//   return words.join(' ')
+// }
