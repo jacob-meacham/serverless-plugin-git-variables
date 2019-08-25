@@ -90,8 +90,7 @@ test.serial('isDirty variable works as expected', async t => {
   process.chdir(t.context.tmpDir)
 
   let func = {
-    name: 'myFunction',
-    environment: {}
+    name: 'myFunction'
   }
   let plugin = new ServerlessGitVariables(generateFakeServerless(func), {})
   await plugin.exportGitVariables()
@@ -101,8 +100,7 @@ test.serial('isDirty variable works as expected', async t => {
   touchFile(filename)
 
   func = {
-    name: 'myFunction',
-    environment: {}
+    name: 'myFunction'
   }
   plugin = new ServerlessGitVariables(generateFakeServerless(func), {})
   await plugin.exportGitVariables()
@@ -114,8 +112,7 @@ test.serial('Env variables defined', async t => {
   process.chdir(t.context.tmpDir)
 
   const func = {
-    name: 'myFunction',
-    environment: {}
+    name: 'myFunction'
   }
   const plugin = new ServerlessGitVariables(generateFakeServerless(func), {})
   await plugin.exportGitVariables()

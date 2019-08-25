@@ -12,6 +12,7 @@ const GIT_PREFIX = 'git'
 async function _exec(cmd, options = { timeout: 1000 }) {
   return new Promise((resolve, reject) => {
     childProcess.exec(cmd, options, (err, stdout) => {
+      /* istanbul ignore if  */
       if (err) {
         reject(err)
       } else {
