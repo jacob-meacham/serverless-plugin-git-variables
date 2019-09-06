@@ -1,12 +1,18 @@
+'use strict'
 // TODO: Consider using nodegit instead
 import childProcess from 'child_process'
 import path from 'path'
+import findUp from 'find-up'
+import Git from 'nodegit'
 
 const GIT_PREFIX = 'git'
+
+// const DEBUG = false
 
 async function _exec(cmd, options = { timeout: 1000 }) {
   return new Promise((resolve, reject) => {
     childProcess.exec(cmd, options, (err, stdout) => {
+      /* istanbul ignore if  */
       if (err) {
         reject(err)
       } else {
@@ -30,11 +36,26 @@ export default class ServerlessGitVariables {
 
       return delegate(variableString)
     }
+
+    this.gitRepoDir = null
+
     this.hooks = {
       'after:package:initialize': this.exportGitVariables.bind(this),
       'before:offline:start': this.exportGitVariables.bind(this),
       'before:offline:start:init': this.exportGitVariables.bind(this)
     }
+  }
+
+  async _getGitRepoDir() {
+    if (!this.gitRepoDir) {
+      // Source = find-up readme:
+      //   https://github.com/sindresorhus/find-up
+      this.gitRepoDir = await findUp(async directory => {
+        const hasGit = await findUp.exists(path.join(directory, '.git'))
+        return hasGit && directory
+      }, {type: 'directory'})
+    }
+    return this.gitRepoDir || process.cwd()
   }
 
   async _getValue(variable) {
@@ -57,24 +78,41 @@ export default class ServerlessGitVariables {
       case 'sha1':
         value = await _exec('git rev-parse --short HEAD')
         break
-      case 'commit':
-        value = await _exec('git rev-parse HEAD')
+      case 'commit': {
+        const gitRepoDir = await this._getGitRepoDir()
+        const repo = await Git.Repository.open(gitRepoDir)
+        const commit = await repo.getHeadCommit()
+        value = commit.sha()
         break
-      case 'branch':
-        value = await _exec('git rev-parse --abbrev-ref HEAD')
+      }
+      case 'branch': {
+        const gitRepoDir = await this._getGitRepoDir()
+        const repo = await Git.Repository.open(gitRepoDir)
+        const ref = await repo.getCurrentBranch()
+        value = ref.shorthand()
         break
-      case 'message':
-        value = await _exec('git log -1 --pretty=%B')
+      }
+      case 'message': {
+        const gitRepoDir = await this._getGitRepoDir()
+        const repo = await Git.Repository.open(gitRepoDir)
+        const commit = await repo.getHeadCommit()
+        value = (await commit.message() || '').trim()
         break
-      case 'isDirty':
-        const writeTree = await _exec('git write-tree')
-        const changes = await _exec(`git diff-index ${writeTree} --`)
+      }
+      case 'isDirty': {
+        const gitRepoDir = await this._getGitRepoDir()
+        const repo = await Git.Repository.open(gitRepoDir)
+        const changes = await repo.getStatus()
+        // DEBUG && await verboseIsDirty(changes)
         value = `${changes.length > 0}`
         break
-      case 'repository':
-        const pathName = await _exec('git rev-parse --show-toplevel')
-        value = path.basename(pathName)
+      }
+      case 'repository': {
+        const gitRepoDir = await this._getGitRepoDir()
+        // DEBUG && await verboseRepository(gitRepoDir)
+        value = path.basename(gitRepoDir)
         break
+      }
       default:
         throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message', 'repository'`)
     }
@@ -130,3 +168,32 @@ export default class ServerlessGitVariables {
     }
   }
 }
+
+// async function verboseIsDirty(changes) {
+//   console.log('isDirty checking', process.cwd())
+//   // console.log(await _exec('ls -la'))
+//   // console.log(await _exec('git status --porcelain'))
+//   if (changes.length > 0) {
+//     console.log('  changes:', changes.map(file => `${file.path()} - ${statusToText(file)}`))
+//   } else {
+//     console.log('  no changes')
+//   }
+// }
+//
+// async function verboseRepository(gitRepoDir) {
+//   console.log('Repository location by method:')
+//   console.log('  git rev-parse:', await _exec('git rev-parse --show-toplevel'))
+//   console.log('  find-up:      ', gitRepoDir)
+// }
+//
+// Utility function to format results of getStatus()
+// function statusToText(status) {
+//   var words = []
+//   if (status.isNew()) { words.push('NEW') }
+//   if (status.isModified()) { words.push('MODIFIED') }
+//   if (status.isTypechange()) { words.push('TYPECHANGE') }
+//   if (status.isRenamed()) { words.push('RENAMED') }
+//   if (status.isIgnored()) { words.push('IGNORED') }
+//
+//   return words.join(' ')
+// }

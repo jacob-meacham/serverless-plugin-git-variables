@@ -2,6 +2,7 @@ import test from 'ava'
 import process from 'process'
 import tmp from 'tmp'
 import fs from 'fs-extra'
+import path from 'path'
 import Serverless from 'serverless'
 
 import ServerlessGitVariables from '../src'
@@ -45,12 +46,13 @@ test.serial('Rejects on bad git command', async t => {
   process.chdir(t.context.tmpDir)
   const sls = buildSls()
   sls.service.custom.describe = '${git:message}' // eslint-disable-line
-  await t.throws(sls.variables.populateService(), /N|not a git repository*/)
+  await t.throws(sls.variables.populateService(), /could not find repository*/)
 })
 
 test.serial('Inserts variables', async t => {
   fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
   process.chdir(t.context.tmpDir)
+  const currentDir = path.basename(t.context.tmpDir)
 
   const sls = buildSls()
   sls.service.custom.describe = '${git:describe}' // eslint-disable-line
@@ -70,6 +72,7 @@ test.serial('Inserts variables', async t => {
   t.is(sls.service.custom.describe2, 'my_tag-1-g90440bd')
   t.is(sls.service.custom.message, 'Another commit')
   t.is(sls.service.custom.describeLight, 'my_tag-1-g90440bd')
+  t.is(sls.service.custom.repository, currentDir)
 })
 
 test('Returns cached value as promise', async t => {
@@ -82,26 +85,36 @@ test('Returns cached value as promise', async t => {
   })
 })
 
+test.serial('isDirty variable works as expected', async t => {
+  fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
+  process.chdir(t.context.tmpDir)
+
+  let func = {
+    name: 'myFunction'
+  }
+  let plugin = new ServerlessGitVariables(generateFakeServerless(func), {})
+  await plugin.exportGitVariables()
+  t.is(func.tags.GIT_IS_DIRTY, 'false')
+
+  const filename = `${t.context.tmpDir}/_my_new_file.txt`
+  touchFile(filename)
+
+  func = {
+    name: 'myFunction'
+  }
+  plugin = new ServerlessGitVariables(generateFakeServerless(func), {})
+  await plugin.exportGitVariables()
+  t.is(func.tags.GIT_IS_DIRTY, 'true')
+})
+
 test.serial('Env variables defined', async t => {
   fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
   process.chdir(t.context.tmpDir)
 
   const func = {
-    name: 'myFunction',
-    environment: {}
+    name: 'myFunction'
   }
-
-  const fakeServerless = {
-    service: {
-      getAllFunctions: () => [func.name],
-      getFunction: name => func
-    },
-    variables: {
-      getValueFromSource: () => 'fake'
-    }
-  }
-
-  const plugin = new ServerlessGitVariables(fakeServerless, {})
+  const plugin = new ServerlessGitVariables(generateFakeServerless(func), {})
   await plugin.exportGitVariables()
 
   t.is(func.environment.GIT_COMMIT_SHORT, '90440bd')
@@ -123,17 +136,7 @@ test.serial('Disabling export of env variables', async t => {
     name: 'myFunction',
     environment: {}
   }
-
-  const fakeServerless = {
-    service: {
-      getAllFunctions: () => [func.name],
-      getFunction: name => func,
-      custom: { exportGitVariables: false }
-    },
-    variables: {
-      getValueFromSource: () => 'fake'
-    }
-  }
+  const fakeServerless = generateFakeServerless(func, { exportGitVariables: false })
   const plugin = new ServerlessGitVariables(fakeServerless, {})
   await plugin.exportGitVariables()
 
@@ -144,3 +147,45 @@ test.serial('Disabling export of env variables', async t => {
 
   t.is(func.tags, undefined)
 })
+
+/**
+ * Make a fake 'serverless' object for use during testing.
+ */
+function generateFakeServerless(func, custom) {
+  const fakeServerless = {
+    service: {
+      getAllFunctions: () => [func.name],
+      getFunction: name => func
+    },
+    variables: {
+      getValueFromSource: () => 'fake'
+    }
+  }
+  if (custom) {
+    fakeServerless.service.custom = custom
+  }
+
+  return fakeServerless
+}
+
+/**
+ * Reset file modified time like *nix 'touch'.
+ * Creates file if does not exist.
+ *
+ * Source:
+ *   https://remarkablemark.org/blog/2017/12/17/touch-file-nodejs/
+ *
+ * @param {String} filename
+ */
+function touchFile(filename) {
+  if (!filename) {
+    throw new Error('[touchFile] missing required param \'filename\'')
+  }
+
+  const time = new Date()
+  try {
+    fs.utimeSync(filename, time, time)
+  } catch (ex) {
+    fs.closeSync(fs.openSync(filename, 'w'))
+  }
+}
