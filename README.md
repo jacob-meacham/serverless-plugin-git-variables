@@ -32,6 +32,14 @@ resources:
     ${git:message}
 ```
 
+## Available variables
+
+* git:repository - name of the git repository
+* git:sha1 - hash of the current commit
+* git:branch - name of the current branch
+* git:isDirty - true if the workspace is currently dirty
+* git:describe / git:describeLight - see below
+
 ## describe and describeLight
 The describe (`${git:describe}`) and the describeLight (`${git:describeLight}`) variables are both used to return the most recent tag of the repo. However the difference is that whilst `describe` evaluates to `git describe --always`, the `describeLight` variable evaluates to `git describe --always --tags`.
 `--always` will ensure that if no tags are present, the commit hash is shown as a fallback option. (See [git describe documentation](https://git-scm.com/docs/git-describe) for more information).
