@@ -76,7 +76,7 @@ export default class ServerlessGitVariables {
         const pathName = await _exec('git rev-parse --show-toplevel')
         value = path.basename(pathName)
         break
-      case 'tagsOrCommit':
+      case 'tags':
         value = await _exec('git tag --points-at HEAD')
         value = value.split(os.EOL).join(',')
         if (value === '') {
@@ -108,7 +108,7 @@ export default class ServerlessGitVariables {
     const branch = await this._getValue('branch')
     const isDirty = await this._getValue('isDirty')
     const repository = await this._getValue('repository')
-    const gitTagsOrCommit = await this._getValue('tagsOrCommit')
+    const gitTagsOrCommit = await this._getValue('tags')
 
     for (const functionName of this.serverless.service.getAllFunctions()) {
       const func = this.serverless.service.getFunction(functionName)
@@ -118,7 +118,7 @@ export default class ServerlessGitVariables {
       this.exportGitVariable(func, 'GIT_BRANCH', branch)
       this.exportGitVariable(func, 'GIT_IS_DIRTY', isDirty)
       this.exportGitVariable(func, 'GIT_REPOSITORY', repository)
-      this.exportGitVariable(func, 'GIT_TAGS_OR_COMMIT', gitTagsOrCommit)
+      this.exportGitVariable(func, 'GIT_TAGS', gitTagsOrCommit)
     }
   }
 

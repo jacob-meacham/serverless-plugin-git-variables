@@ -62,7 +62,7 @@ test.serial('Inserts variables', async t => {
   sls.service.custom.message = '${git:message}' // eslint-disable-line
   sls.service.custom.describeLight = '${git:describeLight}' // eslint-disable-line
   sls.service.custom.repository = '${git:repository}' // eslint-disable-line
-  sls.service.custom.tagsOrCommit = '${git:tagsOrCommit}' // eslint-disable-line
+  sls.service.custom.tags = '${git:tags}' // eslint-disable-line
   await sls.variables.populateService()
 
   t.is(sls.service.custom.sha1, '90440bd')
@@ -72,7 +72,7 @@ test.serial('Inserts variables', async t => {
   t.is(sls.service.custom.describe2, 'my_tag-1-g90440bd')
   t.is(sls.service.custom.message, 'Another commit')
   t.is(sls.service.custom.describeLight, 'my_tag-1-g90440bd')
-  t.is(sls.service.custom.tagsOrCommit, '90440bd')
+  t.is(sls.service.custom.tags, '90440bd')
 })
 
 test.serial('One tag on HEAD', async t => {
@@ -90,7 +90,7 @@ test.serial('One tag on HEAD', async t => {
   sls.service.custom.message = '${git:message}' // eslint-disable-line
   sls.service.custom.describeLight = '${git:describeLight}' // eslint-disable-line
   sls.service.custom.repository = '${git:repository}' // eslint-disable-line
-  sls.service.custom.tagsOrCommit = '${git:tagsOrCommit}' // eslint-disable-line
+  sls.service.custom.tags = '${git:tags}' // eslint-disable-line
   await sls.variables.populateService()
 
   t.is(sls.service.custom.sha1, 'ef5f068')
@@ -100,7 +100,7 @@ test.serial('One tag on HEAD', async t => {
   t.is(sls.service.custom.describe2, 'my_tag')
   t.is(sls.service.custom.message, 'Initial')
   t.is(sls.service.custom.describeLight, 'my_tag')
-  t.is(sls.service.custom.tagsOrCommit, 'my_tag')
+  t.is(sls.service.custom.tags, 'my_tag')
 })
 
 test.serial('Multiple tags on HEAD', async t => {
@@ -118,7 +118,7 @@ test.serial('Multiple tags on HEAD', async t => {
   sls.service.custom.message = '${git:message}' // eslint-disable-line
   sls.service.custom.describeLight = '${git:describeLight}' // eslint-disable-line
   sls.service.custom.repository = '${git:repository}' // eslint-disable-line
-  sls.service.custom.tagsOrCommit = '${git:tagsOrCommit}' // eslint-disable-line
+  sls.service.custom.tags = '${git:tags}' // eslint-disable-line
   await sls.variables.populateService()
 
   t.is(sls.service.custom.sha1, '1335258')
@@ -128,7 +128,7 @@ test.serial('Multiple tags on HEAD', async t => {
   t.is(sls.service.custom.describe2, 'my_tag-1-g1335258')
   t.is(sls.service.custom.message, 'Commit with tags.')
   t.is(sls.service.custom.describeLight, 'tag1')
-  t.is(sls.service.custom.tagsOrCommit, 'tag1,tag2')
+  t.is(sls.service.custom.tags, 'tag1,tag2')
 })
 
 test('Returns cached value as promise', async t => {
@@ -167,13 +167,13 @@ test.serial('Env variables defined', async t => {
   t.is(func.environment.GIT_COMMIT_LONG, '90440bdc8eb3b2fa20bc578f411cf4b725ae0a25')
   t.is(func.environment.GIT_BRANCH, 'another_branch')
   t.is(func.environment.GIT_IS_DIRTY, 'false')
-  t.is(func.environment.GIT_TAGS_OR_COMMIT, '90440bd')
+  t.is(func.environment.GIT_TAGS, '90440bd')
 
   t.is(func.tags.GIT_COMMIT_SHORT, '90440bd')
   t.is(func.tags.GIT_COMMIT_LONG, '90440bdc8eb3b2fa20bc578f411cf4b725ae0a25')
   t.is(func.tags.GIT_BRANCH, 'another_branch')
   t.is(func.tags.GIT_IS_DIRTY, 'false')
-  t.is(func.tags.GIT_TAGS_OR_COMMIT, '90440bd')
+  t.is(func.tags.GIT_TAGS, '90440bd')
 })
 
 test.serial('Disabling export of env variables', async t => {
@@ -202,7 +202,7 @@ test.serial('Disabling export of env variables', async t => {
   t.is(func.environment.GIT_COMMIT_LONG, undefined)
   t.is(func.environment.GIT_BRANCH, undefined)
   t.is(func.environment.GIT_IS_DIRTY, undefined)
-  t.is(func.environment.GIT_TAGS_OR_COMMIT, undefined)
+  t.is(func.environment.GIT_TAGS, undefined)
 
   t.is(func.tags, undefined)
 })

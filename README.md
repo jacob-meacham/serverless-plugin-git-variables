@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables.svg?branch=develop)](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables)
 
 Expose git variables (HEAD description, branch name, short commit hash, message, git tags, and if the local repo has changed files) to your serverless services.
-Moreover, it adds GIT related environment variables and tags (GIT_COMMIT_SHORT, GIT_COMMIT_LONG, GIT_BRANCH, GIT_IS_DIRTY, GIT_REPOSITORY, GIT_TAGS_OR_COMMIT) for each defined function in the serverless file. You can disable this by adding the following custom variable in your serverless.yml file:
+Moreover, it adds GIT related environment variables and tags (GIT_COMMIT_SHORT, GIT_COMMIT_LONG, GIT_BRANCH, GIT_IS_DIRTY, GIT_REPOSITORY, GIT_TAGS) for each defined function in the serverless file. You can disable this by adding the following custom variable in your serverless.yml file:
 
 ```
 custom:
@@ -14,7 +14,7 @@ custom:
 ```yaml
 
 custom:
-  gitDescription: ${git:repository} - ${git:branch} - ${git:tagsOrCommit}
+  gitDescription: ${git:repository} - ${git:branch} - ${git:tags}
 
 functions:
   processEventBatch:
@@ -43,9 +43,9 @@ Annotated tags are shown by both `describe` and `describeLight`, only `describeL
 
 For more information on annotated and lightweight tags go to the [git documentation on tagging](https://git-scm.com/book/en/v2/Git-Basics-Tagging).
 
-## tagsOrCommit
+## tags
 
-The tagsOrCommit (`${git:tagsOrCommit}`) is used to get info about which git tags (separated by comma) are pointing to current commit and if none it will show commit ID as fallback.
+The tags (`${git:tags}`) is used to get info about which git tags (separated by comma) are pointing to current commit and if none it will show commit ID as fallback.
 
 # Serverless Version Support
 * If you're using serverless 1.12.x or below, use the 1.x.x version of this plugin.
