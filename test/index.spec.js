@@ -61,6 +61,8 @@ test.serial('Inserts variables', async t => {
   sls.service.custom.message = '${git:message}' // eslint-disable-line
   sls.service.custom.describeLight = '${git:describeLight}' // eslint-disable-line
   sls.service.custom.repository = '${git:repository}' // eslint-disable-line
+  sls.service.custom.gitUser = '${git:user}' // eslint-disable-line
+  sls.service.custom.gitEmail = '${git:email}' // eslint-disable-line
   await sls.variables.populateService()
 
   t.is(sls.service.custom.sha1, '90440bd')
@@ -70,6 +72,8 @@ test.serial('Inserts variables', async t => {
   t.is(sls.service.custom.describe2, 'my_tag-1-g90440bd')
   t.is(sls.service.custom.message, 'Another commit')
   t.is(sls.service.custom.describeLight, 'my_tag-1-g90440bd')
+  t.is(sls.service.custom.gitUser, 'Full User')
+  t.is(sls.service.custom.gitEmail, 'full@example.com')
 })
 
 test('Returns cached value as promise', async t => {
@@ -113,6 +117,35 @@ test.serial('Env variables defined', async t => {
   t.is(func.tags.GIT_COMMIT_LONG, '90440bdc8eb3b2fa20bc578f411cf4b725ae0a25')
   t.is(func.tags.GIT_BRANCH, 'another_branch')
   t.is(func.tags.GIT_IS_DIRTY, 'false')
+})
+
+test.serial('User/Email not exported', async t => {
+  fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
+  process.chdir(t.context.tmpDir)
+
+  const func = {
+    name: 'myFunction',
+    environment: {}
+  }
+
+  const fakeServerless = {
+    service: {
+      getAllFunctions: () => [func.name],
+      getFunction: name => func
+    },
+    variables: {
+      getValueFromSource: () => 'fake'
+    }
+  }
+
+  const plugin = new ServerlessGitVariables(fakeServerless, {})
+  await plugin.exportGitVariables()
+
+  t.is(func.environment.GIT_USER, undefined)
+  t.is(func.environment.GIT_EMAIL, undefined)
+
+  t.is(func.tags.GIT_USER, undefined)
+  t.is(func.tags.GIT_EMAIL, undefined)
 })
 
 test.serial('Disabling export of env variables', async t => {
