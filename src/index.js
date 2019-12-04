@@ -1,6 +1,7 @@
 // TODO: Consider using nodegit instead
 import childProcess from 'child_process'
 import path from 'path'
+import os from 'os'
 
 const GIT_PREFIX = 'git'
 
@@ -81,6 +82,13 @@ export default class ServerlessGitVariables {
         const pathName = await _exec('git rev-parse --show-toplevel')
         value = path.basename(pathName)
         break
+      case 'tags':
+        value = await _exec('git tag --points-at HEAD')
+        value = value.split(os.EOL).join(',')
+        if (value === '') {
+          value = await _exec('git rev-parse --short HEAD')
+        }
+        break
       default:
         throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message', 'repository'`)
     }
@@ -106,6 +114,7 @@ export default class ServerlessGitVariables {
     const branch = await this._getValue('branch')
     const isDirty = await this._getValue('isDirty')
     const repository = await this._getValue('repository')
+    const gitTagsOrCommit = await this._getValue('tags')
 
     for (const functionName of this.serverless.service.getAllFunctions()) {
       const func = this.serverless.service.getFunction(functionName)
@@ -115,6 +124,7 @@ export default class ServerlessGitVariables {
       this.exportGitVariable(func, 'GIT_BRANCH', branch)
       this.exportGitVariable(func, 'GIT_IS_DIRTY', isDirty)
       this.exportGitVariable(func, 'GIT_REPOSITORY', repository)
+      this.exportGitVariable(func, 'GIT_TAGS', gitTagsOrCommit)
     }
   }
 
