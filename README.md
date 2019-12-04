@@ -61,6 +61,9 @@ The tags (`${git:tags}`) is used to get info about which git tags (separated by 
 * If you're using serverless 1.16.x or above, use the >=2.x.x version of this plugin.
 
 # Version History
+* 3.4.0
+  - Add user name / email (Thanks to @JordanReiter)
+  - Add git tag information (Thanks to @navrkald)
 * 3.3.3
   - Update dependencies thanks to dependabot
 * 3.3.2
