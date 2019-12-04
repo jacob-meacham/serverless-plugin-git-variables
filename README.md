@@ -2,8 +2,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/jacob-meacham/serverless-plugin-git-variables/badge.svg?branch=develop)](https://coveralls.io/github/jacob-meacham/serverless-plugin-git-variables?branch=develop)
 [![Build Status](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables.svg?branch=develop)](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables)
 
-Expose git variables (HEAD description, branch name, short commit hash, message, and if the local repo has changed files) to your serverless services.
-Moreover, it adds GIT related environment variables and tags (GIT_COMMIT_SHORT, GIT_COMMIT_LONG, GIT_BRANCH, GIT_IS_DIRTY, GIT_REPOSITORY) for each defined function in the serverless file. You can disable this by adding the following custom variable in your serverless.yml file:
+Expose git variables (HEAD description, branch name, short commit hash, message, git tags, and if the local repo has changed files) to your serverless services.
+Moreover, it adds GIT related environment variables and tags (GIT_COMMIT_SHORT, GIT_COMMIT_LONG, GIT_BRANCH, GIT_IS_DIRTY, GIT_REPOSITORY, GIT_TAGS) for each defined function in the serverless file. You can disable this by adding the following custom variable in your serverless.yml file:
 
 ```
 custom:
@@ -13,14 +13,17 @@ custom:
 # Usage
 ```yaml
 
+custom:
+  gitDescription: ${git:repository} - ${git:branch} - ${git:tags}
+
 functions:
   processEventBatch:
     name: ${self:provider.stage}-${self:service}-process-event-batch
-    description: ${git:repository} - ${git:branch} - ${git:describe} - ${git:sha1}
+    description: ${self:custom.gitDescription}
 
   processEventBatch2:
     name: ${self:provider.stage}-${self:service}-process-event-batch-2
-    description: ${git:repository} - ${git:describeLight} - ${git:branch}
+    description: ${self:custom.gitDescription}
 
 plugins:
   - serverless-plugin-git-variables
@@ -48,12 +51,19 @@ Annotated tags are shown by both `describe` and `describeLight`, only `describeL
 
 For more information on annotated and lightweight tags go to the [git documentation on tagging](https://git-scm.com/book/en/v2/Git-Basics-Tagging).
 
+## tags
+
+The tags (`${git:tags}`) is used to get info about which git tags (separated by comma) are pointing to current commit and if none it will show commit ID as fallback.
+
 # Serverless Version Support
 * If you're using serverless 1.12.x or below, use the 1.x.x version of this plugin.
 * This plugin is currently broken for serverless versions between 1.13 and 1.15 (inclusive).
 * If you're using serverless 1.16.x or above, use the >=2.x.x version of this plugin.
 
 # Version History
+* 3.4.0
+  - Add user name / email (Thanks to @JordanReiter)
+  - Add git tag information (Thanks to @navrkald)
 * 3.3.3
   - Update dependencies thanks to dependabot
 * 3.3.2

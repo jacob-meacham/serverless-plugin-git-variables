@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-git-variables",
-  "version": "3.3.3",
+  "version": "3.4.0",
   "engines": {
     "node": ">=7.0"
   },
