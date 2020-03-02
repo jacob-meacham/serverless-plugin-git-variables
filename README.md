@@ -10,6 +10,16 @@ custom:
   exportGitVariables: false
 ```
 
+If you only want to add a specific subset of variables/tags, you can define a whitelist:
+
+```
+custom:
+  gitVariablesEnvWhitelist: ['GIT_COMMIT_SHORT', 'GIT_TAGS']
+  gitVariablesTagsWhitelist: ['GIT_REPOSITORY', 'GIT_COMMIT_LONG']
+```
+
+If you have multiple git tags, you'll run into issues when adding them as AWS tags, so you'll need to exclude them from the whitelist.
+
 # Usage
 ```yaml
 
@@ -61,6 +71,8 @@ The tags (`${git:tags}`) is used to get info about which git tags (separated by 
 * If you're using serverless 1.16.x or above, use the >=2.x.x version of this plugin.
 
 # Version History
+* 3.5.0
+  - Add ability to specify whitelist of variables to set on the environment or in tags
 * 3.4.0
   - Add user name / email (Thanks to @JordanReiter)
   - Add git tag information (Thanks to @navrkald)

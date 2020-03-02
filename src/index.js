@@ -90,7 +90,7 @@ export default class ServerlessGitVariables {
         }
         break
       default:
-        throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message', 'repository'`)
+        throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message', 'user', 'email', 'isDirty', 'repository', 'tags'`)
     }
 
     // TODO: Figure out why if I don't log, the deasync promise
@@ -105,44 +105,59 @@ export default class ServerlessGitVariables {
 
   async exportGitVariables() {
     const exportGitVariables = this.serverless.service.custom && this.serverless.service.custom.exportGitVariables
+
+    let envWhitelist = this.serverless.service.custom && this.serverless.service.custom.gitVariablesEnvWhitelist
+    let tagsWhitelist = this.serverless.service.custom && this.serverless.service.custom.gitVariablesTagsWhitelist
+
     if (exportGitVariables === false) {
       return
     }
 
-    const sha1 = await this._getValue('sha1')
-    const commit = await this._getValue('commit')
-    const branch = await this._getValue('branch')
-    const isDirty = await this._getValue('isDirty')
-    const repository = await this._getValue('repository')
-    const gitTagsOrCommit = await this._getValue('tags')
+    const exportList = [
+      { value: 'sha1', variableName: 'GIT_COMMIT_SHORT' },
+      { value: 'commit', variableName: 'GIT_COMMIT_LONG' },
+      { value: 'branch', variableName: 'GIT_BRANCH' },
+      { value: 'isDirty', variableName: 'GIT_IS_DIRTY' },
+      { value: 'repository', variableName: 'GIT_REPOSITORY' },
+      { value: 'tags', variableName: 'GIT_TAGS' }
+    ]
 
     for (const functionName of this.serverless.service.getAllFunctions()) {
       const func = this.serverless.service.getFunction(functionName)
 
-      this.exportGitVariable(func, 'GIT_COMMIT_SHORT', sha1)
-      this.exportGitVariable(func, 'GIT_COMMIT_LONG', commit)
-      this.exportGitVariable(func, 'GIT_BRANCH', branch)
-      this.exportGitVariable(func, 'GIT_IS_DIRTY', isDirty)
-      this.exportGitVariable(func, 'GIT_REPOSITORY', repository)
-      this.exportGitVariable(func, 'GIT_TAGS', gitTagsOrCommit)
+      for (const { value, variableName } of exportList) {
+        const setOnEnv = !envWhitelist || envWhitelist.includes(variableName)
+        const setOnTags = !tagsWhitelist || tagsWhitelist.includes(variableName)
+
+        if (!setOnEnv && !setOnTags) {
+          continue
+        }
+
+        const gitValue = await this._getValue(value)
+        this.exportGitVariable(func, variableName, gitValue, setOnEnv, setOnTags)
+      }
     }
   }
 
-  exportGitVariable(func, variableName, gitValue) {
-    if (!func.environment) {
-      func.environment = {}
+  exportGitVariable(func, variableName, gitValue, setOnEnv = true, setOnTags = true) {
+    if (setOnEnv) {
+      if (!func.environment) {
+        func.environment = {}
+      }
+
+      if (!func.environment[variableName]) {
+        func.environment[variableName] = gitValue
+      }
     }
 
-    if (!func.environment[variableName]) {
-      func.environment[variableName] = gitValue
-    }
+    if (setOnTags) {
+      if (!func.tags) {
+        func.tags = {}
+      }
 
-    if (!func.tags) {
-      func.tags = {}
-    }
-
-    if (!func.tags[variableName]) {
-      func.tags[variableName] = gitValue
+      if (!func.tags[variableName]) {
+        func.tags[variableName] = gitValue
+      }
     }
   }
 }
