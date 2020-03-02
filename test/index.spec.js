@@ -181,6 +181,45 @@ test.serial('Env variables defined', async t => {
   t.is(func.tags.GIT_TAGS, '90440bd')
 })
 
+test.serial('Whitelist', async t => {
+  fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
+  process.chdir(t.context.tmpDir)
+
+  const func = {
+    name: 'myFunction',
+    environment: {}
+  }
+
+  const fakeServerless = {
+    service: {
+      getAllFunctions: () => [func.name],
+      getFunction: name => func,
+      custom: {
+        gitVariablesEnvWhitelist: ['GIT_COMMIT_SHORT', 'GIT_IS_DIRTY'],
+        gitVariablesTagsWhitelist: ['GIT_COMMIT_LONG', 'GIT_TAGS']
+      }
+    },
+    variables: {
+      getValueFromSource: () => 'fake'
+    }
+  }
+
+  const plugin = new ServerlessGitVariables(fakeServerless, {})
+  await plugin.exportGitVariables()
+
+  t.is(func.environment.GIT_COMMIT_SHORT, '90440bd')
+  t.is(func.environment.GIT_COMMIT_LONG, undefined)
+  t.is(func.environment.GIT_BRANCH, undefined)
+  t.is(func.environment.GIT_IS_DIRTY, 'false')
+  t.is(func.environment.GIT_TAGS, undefined)
+
+  t.is(func.tags.GIT_COMMIT_SHORT, undefined)
+  t.is(func.tags.GIT_COMMIT_LONG, '90440bdc8eb3b2fa20bc578f411cf4b725ae0a25')
+  t.is(func.tags.GIT_BRANCH, undefined)
+  t.is(func.tags.GIT_IS_DIRTY, undefined)
+  t.is(func.tags.GIT_TAGS, '90440bd')
+})
+
 test.serial('User/Email not exported', async t => {
   fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
   process.chdir(t.context.tmpDir)
