@@ -10,6 +10,16 @@ custom:
   exportGitVariables: false
 ```
 
+If you only want to add a specific subset of variables/tags, you can define a whitelist:
+
+```
+custom:
+  gitVariablesEnvWhitelist: ['GIT_COMMIT_SHORT', 'GIT_TAGS']
+  gitVariablesTagsWhitelist: ['GIT_REPOSITORY', 'GIT_COMMIT_LONG']
+```
+
+If you have multiple git tags, you'll run into issues when adding them as AWS tags, so you'll need to exclude them from the whitelist.
+
 # Usage
 ```yaml
 
