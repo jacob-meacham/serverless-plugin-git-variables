@@ -63,7 +63,7 @@ For more information on annotated and lightweight tags go to the [git documentat
 
 ## tags
 
-The tags (`${git:tags}`) is used to get info about which git tags (separated by comma) are pointing to current commit and if none it will show commit ID as fallback.
+The tags (`${git:tags}`) is used to get info about which git tags (separated by ::) are pointing to current commit and if none it will show commit ID as fallback.
 
 # Serverless Version Support
 * If you're using serverless 1.12.x or below, use the 1.x.x version of this plugin.
