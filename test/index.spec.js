@@ -133,7 +133,7 @@ test.serial('Multiple tags on HEAD', async t => {
   t.is(sls.service.custom.describe2, 'my_tag-1-g1335258')
   t.is(sls.service.custom.message, 'Commit with tags.')
   t.is(sls.service.custom.describeLight, 'tag1')
-  t.is(sls.service.custom.tags, 'tag1,tag2')
+  t.is(sls.service.custom.tags, 'tag1::tag2')
 })
 
 test('Returns cached value as promise', async t => {
