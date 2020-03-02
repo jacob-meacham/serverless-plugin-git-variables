@@ -71,6 +71,8 @@ The tags (`${git:tags}`) is used to get info about which git tags (separated by 
 * If you're using serverless 1.16.x or above, use the >=2.x.x version of this plugin.
 
 # Version History
+* 4.0.0
+  - Change `tags` separator from ',' to '::' to conform to the AWS tag regex
 * 3.5.0
   - Add ability to specify whitelist of variables to set on the environment or in tags
 * 3.4.0
