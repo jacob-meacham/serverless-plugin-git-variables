@@ -84,7 +84,7 @@ export default class ServerlessGitVariables {
         break
       case 'tags':
         value = await _exec('git tag --points-at HEAD')
-        value = value.split(os.EOL).join(',')
+        value = value.split(os.EOL).join('::')
         if (value === '') {
           value = await _exec('git rev-parse --short HEAD')
         }
