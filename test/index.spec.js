@@ -173,12 +173,16 @@ test.serial('Env variables defined', async t => {
   t.is(func.environment.GIT_BRANCH, 'another_branch')
   t.is(func.environment.GIT_IS_DIRTY, 'false')
   t.is(func.environment.GIT_TAGS, '90440bd')
+  t.is(func.environment.GIT_USER, 'Full User')
+  t.is(func.environment.GIT_EMAIL, 'full@example.com')
 
   t.is(func.tags.GIT_COMMIT_SHORT, '90440bd')
   t.is(func.tags.GIT_COMMIT_LONG, '90440bdc8eb3b2fa20bc578f411cf4b725ae0a25')
   t.is(func.tags.GIT_BRANCH, 'another_branch')
   t.is(func.tags.GIT_IS_DIRTY, 'false')
   t.is(func.tags.GIT_TAGS, '90440bd')
+  t.is(func.tags.GIT_USER, 'Full User')
+  t.is(func.tags.GIT_EMAIL, 'full@example.com')
 })
 
 test.serial('Whitelist', async t => {
@@ -212,15 +216,19 @@ test.serial('Whitelist', async t => {
   t.is(func.environment.GIT_BRANCH, undefined)
   t.is(func.environment.GIT_IS_DIRTY, 'false')
   t.is(func.environment.GIT_TAGS, undefined)
+  t.is(func.environment.GIT_USER, undefined)
+  t.is(func.environment.GIT_EMAIL, undefined)
 
   t.is(func.tags.GIT_COMMIT_SHORT, undefined)
   t.is(func.tags.GIT_COMMIT_LONG, '90440bdc8eb3b2fa20bc578f411cf4b725ae0a25')
   t.is(func.tags.GIT_BRANCH, undefined)
   t.is(func.tags.GIT_IS_DIRTY, undefined)
   t.is(func.tags.GIT_TAGS, '90440bd')
+  t.is(func.tags.GIT_USER, undefined)
+  t.is(func.tags.GIT_EMAIL, undefined)
 })
 
-test.serial('User/Email not exported', async t => {
+test.serial('User/Email is exported', async t => {
   fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
   process.chdir(t.context.tmpDir)
 
@@ -242,11 +250,11 @@ test.serial('User/Email not exported', async t => {
   const plugin = new ServerlessGitVariables(fakeServerless, {})
   await plugin.exportGitVariables()
 
-  t.is(func.environment.GIT_USER, undefined)
-  t.is(func.environment.GIT_EMAIL, undefined)
+  t.is(func.environment.GIT_USER, 'Full User')
+  t.is(func.environment.GIT_EMAIL, 'full@example.com')
 
-  t.is(func.tags.GIT_USER, undefined)
-  t.is(func.tags.GIT_EMAIL, undefined)
+  t.is(func.tags.GIT_USER, 'Full User')
+  t.is(func.tags.GIT_EMAIL, 'full@example.com')
 })
 
 test.serial('Disabling export of env variables', async t => {
@@ -276,6 +284,8 @@ test.serial('Disabling export of env variables', async t => {
   t.is(func.environment.GIT_BRANCH, undefined)
   t.is(func.environment.GIT_IS_DIRTY, undefined)
   t.is(func.environment.GIT_TAGS, undefined)
+  t.is(func.environment.GIT_USER, undefined)
+  t.is(func.environment.GIT_EMAIL, undefined)
 
   t.is(func.tags, undefined)
 })
