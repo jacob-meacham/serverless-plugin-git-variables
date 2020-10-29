@@ -1,0 +1,9 @@
+0000000000000000000000000000000000000000 3ae2819fad766c624537d55aa50e68ca875d1982 Jordan Reiter <jordan_reiter@comcast.com> 1604015695 -0400	commit (initial): Initial commit
+3ae2819fad766c624537d55aa50e68ca875d1982 0000000000000000000000000000000000000000 Jordan Reiter <jordan_reiter@comcast.com> 1604015738 -0400	Branch: renamed refs/heads/master to refs/heads/main
+0000000000000000000000000000000000000000 3ae2819fad766c624537d55aa50e68ca875d1982 Jordan Reiter <jordan_reiter@comcast.com> 1604015738 -0400	Branch: renamed refs/heads/master to refs/heads/main
+3ae2819fad766c624537d55aa50e68ca875d1982 3ae2819fad766c624537d55aa50e68ca875d1982 Jordan Reiter <jordan_reiter@comcast.com> 1604015753 -0400	checkout: moving from main to develop
+3ae2819fad766c624537d55aa50e68ca875d1982 0000000000000000000000000000000000000000 Jordan Reiter <jordan_reiter@comcast.com> 1604015767 -0400	Branch: renamed refs/heads/develop to refs/heads/first_branch
+0000000000000000000000000000000000000000 3ae2819fad766c624537d55aa50e68ca875d1982 Jordan Reiter <jordan_reiter@comcast.com> 1604015767 -0400	Branch: renamed refs/heads/develop to refs/heads/first_branch
+3ae2819fad766c624537d55aa50e68ca875d1982 b9716e52f3f83fbf823efd78cac5ecef303c88e3 Jordan Reiter <jordan_reiter@comcast.com> 1604015792 -0400	commit: Second commit
+b9716e52f3f83fbf823efd78cac5ecef303c88e3 858a6a877a03f148b5046e9a60dd618996f16965 Jordan Reiter <jordan_reiter@comcast.com> 1604015803 -0400	commit: Third commit
+858a6a877a03f148b5046e9a60dd618996f16965 40f56bc4d35feb79f48f8d0c790f1fed1cf5c03f Jordan Reiter <jordan_reiter@comcast.com> 1604015815 -0400	commit: Fourth commit

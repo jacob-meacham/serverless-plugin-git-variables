@@ -63,6 +63,14 @@ export default class ServerlessGitVariables {
         break
       case 'branch':
         value = await _exec('git rev-parse --abbrev-ref HEAD')
+        if (value === 'HEAD') {
+          // Might be a detached commit, so try getting the value from the log
+          try {
+            // print list of potential branches; the last one is the best match
+            // if no value found, stick with HEAD
+            value = (await _exec('git log -n 1 --pretty="%D" HEAD')).split(' ').pop() || 'HEAD'
+          } catch (e) {}
+        }
         break
       case 'message':
         value = await _exec('git log -1 --pretty=%B')

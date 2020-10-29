@@ -136,6 +136,50 @@ test.serial('Multiple tags on HEAD', async t => {
   t.is(sls.service.custom.tags, 'tag1::tag2')
 })
 
+test.serial('Detached state last commit correct branch', async t => {
+  fs.copySync('test/resources/multiple_commits/git', `${t.context.tmpDir}/.git`)
+  fs.copySync('test/resources/multiple_commits/log.txt', `${t.context.tmpDir}/log.txt`)
+  process.chdir(t.context.tmpDir)
+
+  // a63b2bc is the last commit of branch first_branch
+  await childProcess.exec('git checkout 40f56bc')
+
+  const sls = buildSls()
+  sls.service.custom.sha1 = '${git:sha1}' // eslint-disable-line
+  sls.service.custom.commit = '${git:commit}' // eslint-disable-line
+  sls.service.custom.branch = '${git:branch}' // eslint-disable-line
+  sls.service.custom.message = '${git:message}' // eslint-disable-line
+  sls.service.custom.repository = '${git:repository}' // eslint-disable-line
+  await sls.variables.populateService()
+
+  t.is(sls.service.custom.message, 'Fourth commit')
+  t.is(sls.service.custom.sha1, '40f56bc')
+  t.is(sls.service.custom.commit, '40f56bc4d35feb79f48f8d0c790f1fed1cf5c03f')
+  t.is(sls.service.custom.branch, 'first_branch')
+})
+
+test.serial('Detached state earlier commit HEAD branch', async t => {
+  fs.copySync('test/resources/multiple_commits/git', `${t.context.tmpDir}/.git`)
+  fs.copySync('test/resources/multiple_commits/log.txt', `${t.context.tmpDir}/log.txt`)
+  process.chdir(t.context.tmpDir)
+
+  // d0862eb is the second-to-last commit of branch first_branch
+  await childProcess.exec('git checkout b9716e5')
+
+  const sls = buildSls()
+  sls.service.custom.sha1 = '${git:sha1}' // eslint-disable-line
+  sls.service.custom.commit = '${git:commit}' // eslint-disable-line
+  sls.service.custom.branch = '${git:branch}' // eslint-disable-line
+  sls.service.custom.message = '${git:message}' // eslint-disable-line
+  sls.service.custom.repository = '${git:repository}' // eslint-disable-line
+  await sls.variables.populateService()
+
+  t.is(sls.service.custom.message, 'Second commit')
+  t.is(sls.service.custom.sha1, 'b9716e5')
+  t.is(sls.service.custom.commit, 'b9716e52f3f83fbf823efd78cac5ecef303c88e3')
+  t.is(sls.service.custom.branch, 'HEAD')
+})
+
 test('Returns cached value as promise', async t => {
   let serverless = new Serverless()
   let vars = new ServerlessGitVariables(serverless, {})
