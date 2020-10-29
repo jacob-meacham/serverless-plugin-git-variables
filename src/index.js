@@ -75,9 +75,9 @@ export default class ServerlessGitVariables {
         break
       case 'isDirty':
         const changes = await _exec(`git diff --stat`)
-        const changesLength = changes.length;
-        value = `${changesLength > 0}`;
-      break
+        const changesLength = changes.length
+        value = `${changesLength > 0}`
+        break
       case 'repository':
         const pathName = await _exec('git rev-parse --show-toplevel')
         value = path.basename(pathName)
