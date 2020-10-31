@@ -74,8 +74,7 @@ export default class ServerlessGitVariables {
         value = await _exec('git config user.email')
         break
       case 'isDirty':
-        const writeTree = await _exec('git write-tree')
-        const changes = await _exec(`git diff-index ${writeTree} --`)
+        const changes = await _exec(`git diff --stat`)
         value = `${changes.length > 0}`
         break
       case 'repository':
