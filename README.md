@@ -65,12 +65,9 @@ For more information on annotated and lightweight tags go to the [git documentat
 
 The tags (`${git:tags}`) is used to get info about which git tags (separated by ::) are pointing to current commit and if none it will show commit ID as fallback.
 
-# Serverless Version Support
-* If you're using serverless 1.12.x or below, use the 1.x.x version of this plugin.
-* This plugin is currently broken for serverless versions between 1.13 and 1.15 (inclusive).
-* If you're using serverless 1.16.x or above, use the >=2.x.x version of this plugin.
-
 # Version History
+* 4.1.0
+  - Fix sporadic failure with git write-tree (Thanks to @navrkald and @james-hu)
 * 4.0.0
   - Change `tags` separator from ',' to '::' to conform to the AWS tag regex
 * 3.5.0
