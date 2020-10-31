@@ -20,7 +20,7 @@ test.beforeEach(t => {
 })
 
 test.beforeEach(t => {
-  t.context.tmpDir = tmp.dirSync({unsafeCleanup: true}).name
+  t.context.tmpDir = tmp.dirSync({ unsafeCleanup: true }).name
 })
 
 test.afterEach.always(t => {
@@ -39,14 +39,18 @@ test('Variables are passed through', async t => {
 test('Rejects on bad key', async t => {
   const sls = buildSls()
   sls.service.custom.myVar = '${git:badKey}' // eslint-disable-line
-  await t.throws(sls.variables.populateService(), /Error: Git variable badKey is unknown.*/)
+  await t.throwsAsync(() => {
+    return sls.variables.populateService()
+  }, { message: /Git variable badKey is unknown.*/ })
 })
 
 test.serial('Rejects on bad git command', async t => {
   process.chdir(t.context.tmpDir)
   const sls = buildSls()
   sls.service.custom.describe = '${git:message}' // eslint-disable-line
-  await t.throws(sls.variables.populateService(), /N|not a git repository*/)
+  await t.throwsAsync(() => {
+    return sls.variables.populateService()
+  }, { message: /N|not a git repository*/ })
 })
 
 test.serial('Inserts variables', async t => {
@@ -137,10 +141,10 @@ test.serial('Multiple tags on HEAD', async t => {
 })
 
 test('Returns cached value as promise', async t => {
-  let serverless = new Serverless()
-  let vars = new ServerlessGitVariables(serverless, {})
-  let fakeTag = 'my_tag-2-c1023gh'
-  vars.resolvedValues['describe'] = fakeTag
+  const serverless = new Serverless()
+  const vars = new ServerlessGitVariables(serverless, {})
+  const fakeTag = 'my_tag-2-c1023gh'
+  vars.resolvedValues.describe = fakeTag
   await serverless.variables.getValueFromSource('git:describe').then(value => {
     t.is(value, fakeTag)
   })
