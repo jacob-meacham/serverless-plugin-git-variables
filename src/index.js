@@ -73,14 +73,16 @@ export default class ServerlessGitVariables {
       case 'email':
         value = await _exec('git config user.email')
         break
-      case 'isDirty':
-        const changes = await _exec(`git diff --stat`)
+      case 'isDirty': {
+        const changes = await _exec('git diff --stat')
         value = `${changes.length > 0}`
         break
-      case 'repository':
+      }
+      case 'repository': {
         const pathName = await _exec('git rev-parse --show-toplevel')
         value = path.basename(pathName)
         break
+      }
       case 'tags':
         value = await _exec('git tag --points-at HEAD')
         value = value.split(os.EOL).join('::')
@@ -105,8 +107,8 @@ export default class ServerlessGitVariables {
   async exportGitVariables() {
     const exportGitVariables = this.serverless.service.custom && this.serverless.service.custom.exportGitVariables
 
-    let envWhitelist = this.serverless.service.custom && this.serverless.service.custom.gitVariablesEnvWhitelist
-    let tagsWhitelist = this.serverless.service.custom && this.serverless.service.custom.gitVariablesTagsWhitelist
+    const envWhitelist = this.serverless.service.custom && this.serverless.service.custom.gitVariablesEnvWhitelist
+    const tagsWhitelist = this.serverless.service.custom && this.serverless.service.custom.gitVariablesTagsWhitelist
 
     if (exportGitVariables === false) {
       return
