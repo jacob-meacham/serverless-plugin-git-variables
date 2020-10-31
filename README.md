@@ -66,6 +66,8 @@ For more information on annotated and lightweight tags go to the [git documentat
 The tags (`${git:tags}`) is used to get info about which git tags (separated by ::) are pointing to current commit and if none it will show commit ID as fallback.
 
 # Version History
+* 5.0.0
+  - Rely on a more modern version of Node, which allows removal of runtime dependencies
 * 4.1.0
   - Fix sporadic failure with git write-tree (Thanks to @navrkald and @james-hu)
 * 4.0.0
