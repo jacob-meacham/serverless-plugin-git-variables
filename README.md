@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables.svg?branch=develop)](https://travis-ci.org/jacob-meacham/serverless-plugin-git-variables)
 
 Expose git variables (HEAD description, branch name, short commit hash, message, git tags, and if the local repo has changed files) to your serverless services.
-Moreover, it adds GIT related environment variables and tags (GIT_COMMIT_SHORT, GIT_COMMIT_LONG, GIT_BRANCH, GIT_IS_DIRTY, GIT_REPOSITORY, GIT_TAGS) for each defined function in the serverless file. You can disable this by adding the following custom variable in your serverless.yml file:
+Moreover, it adds GIT related environment variables and tags (GIT_COMMIT_SHORT, GIT_COMMIT_LONG, GIT_BRANCH, GIT_IS_DIRTY, GIT_REPOSITORY, GIT_TAGS, GIT_USER, GIT_EMAIL) for each defined function in the serverless file. You can disable this by adding the following custom variable in your serverless.yml file:
 
 ```
 custom:

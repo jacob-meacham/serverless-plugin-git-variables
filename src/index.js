@@ -118,7 +118,9 @@ export default class ServerlessGitVariables {
       { value: 'branch', variableName: 'GIT_BRANCH' },
       { value: 'isDirty', variableName: 'GIT_IS_DIRTY' },
       { value: 'repository', variableName: 'GIT_REPOSITORY' },
-      { value: 'tags', variableName: 'GIT_TAGS' }
+      { value: 'tags', variableName: 'GIT_TAGS' },
+      { value: 'user', variableName: 'GIT_USER' },
+      { value: 'email', variableName: 'GIT_EMAIL' }
     ]
 
     for (const functionName of this.serverless.service.getAllFunctions()) {
