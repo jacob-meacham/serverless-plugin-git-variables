@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-git-variables",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "engines": {
     "node": ">=12.0"
   },
@@ -47,6 +47,7 @@
     "@babel/preset-env": "7.12.1",
     "@babel/register": "7.12.1",
     "ava": "3.13.0",
+    "babel-plugin-add-module-exports": "1.0.4",
     "coveralls": "3.1.0",
     "cross-env": "7.0.2",
     "eslint": "7.12.1",
@@ -78,9 +79,13 @@
         {
           "targets": {
             "node": 12
-          }
+          },
+          "modules": "commonjs"
         }
       ]
+    ],
+    "plugins": [
+      "add-module-exports"
     ]
   }
 }
