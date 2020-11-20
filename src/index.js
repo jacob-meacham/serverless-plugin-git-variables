@@ -67,6 +67,12 @@ export default class ServerlessGitVariables {
       case 'message':
         value = await _exec('git log -1 --pretty=%B')
         break
+      case 'messageSubject':
+        value = await _exec('git log -1 --pretty=%s')
+        break
+      case 'messageBody':
+        value = await _exec('git log -1 --pretty=%b')
+        break
       case 'user':
         value = await _exec('git config user.name')
         break
@@ -91,7 +97,7 @@ export default class ServerlessGitVariables {
         }
         break
       default:
-        throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message', 'user', 'email', 'isDirty', 'repository', 'tags'`)
+        throw new Error(`Git variable ${variable} is unknown. Candidates are 'describe', 'describeLight', 'sha1', 'commit', 'branch', 'message', 'messageSubject', 'messageBody', 'user', 'email', 'isDirty', 'repository', 'tags'`)
     }
 
     // TODO: Figure out why if I don't log, the deasync promise

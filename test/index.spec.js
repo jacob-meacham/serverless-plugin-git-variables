@@ -140,6 +140,29 @@ test.serial('Multiple tags on HEAD', async t => {
   t.is(sls.service.custom.tags, 'tag1::tag2')
 })
 
+test.serial('Multiline message on HEAD', async t => {
+  fs.copySync('test/resources/full_repo/git', `${t.context.tmpDir}/.git`)
+  process.chdir(t.context.tmpDir)
+
+  await childProcess.exec('git checkout branch_with_multiline_msg')
+
+  const sls = buildSls()
+  sls.service.custom.sha1 = '${git:sha1}' // eslint-disable-line
+  sls.service.custom.commit = '${git:commit}' // eslint-disable-line
+  sls.service.custom.branch = '${git:branch}' // eslint-disable-line
+  sls.service.custom.message = '${git:message}' // eslint-disable-line
+  sls.service.custom.messageSubject = '${git:messageSubject}' // eslint-disable-line
+  sls.service.custom.messageBody = '${git:messageBody}' // eslint-disable-line
+  await sls.variables.populateService()
+
+  t.is(sls.service.custom.sha1, '4b4971e')
+  t.is(sls.service.custom.commit, '4b4971e54a1cd05eab6c0ae32cf5cd330c9dcc41')
+  t.is(sls.service.custom.branch, 'branch_with_multiline_msg')
+  t.is(sls.service.custom.message, 'Commit with subject and body\n\nThis is the first line of the body.\n\nAnd this is another line.')
+  t.is(sls.service.custom.messageSubject, 'Commit with subject and body')
+  t.is(sls.service.custom.messageBody, 'This is the first line of the body.\n\nAnd this is another line.')
+})
+
 test('Returns cached value as promise', async t => {
   const serverless = new Serverless()
   const vars = new ServerlessGitVariables(serverless, {})
