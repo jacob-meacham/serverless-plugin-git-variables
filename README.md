@@ -52,6 +52,12 @@ resources:
 * git:branch - name of the current branch
 * git:isDirty - true if the workspace is currently dirty
 * git:describe / git:describeLight - see below
+* git:user - The user's name
+* git:email - The user's email
+* git:tags - The tag pointing to the current commit
+* git:message - Full git commit message
+* git:messageSubject - Only the suject of the message, as `git log -1 --pretty=%s`
+* git:messageBody - Only the body of the message, as `git log -1 --pretty=%b`
 
 ## describe and describeLight
 The describe (`${git:describe}`) and the describeLight (`${git:describeLight}`) variables are both used to return the most recent tag of the repo. However the difference is that whilst `describe` evaluates to `git describe --always`, the `describeLight` variable evaluates to `git describe --always --tags`.
@@ -66,6 +72,8 @@ For more information on annotated and lightweight tags go to the [git documentat
 The tags (`${git:tags}`) is used to get info about which git tags (separated by ::) are pointing to current commit and if none it will show commit ID as fallback.
 
 # Version History
+* 5.1.0
+  - Add messageSubject/messageBody (Thanks @vhenzl)
 * 5.0.1
   - Fix module export (Thanks @nason)
 * 5.0.0

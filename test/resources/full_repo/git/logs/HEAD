@@ -7,3 +7,6 @@ ef5f0683654427ff38d43836098f6336d73c4576 90440bdc8eb3b2fa20bc578f411cf4b725ae0a2
 90440bdc8eb3b2fa20bc578f411cf4b725ae0a25 ef5f0683654427ff38d43836098f6336d73c4576 David Navrkal <navrkald@gmail.com> 1571233695 +0200	checkout: moving from another_branch to branch_with_tags
 ef5f0683654427ff38d43836098f6336d73c4576 1335258f70f45c6243bc674df830cd0ec7c3c714 David Navrkal <navrkald@gmail.com> 1571233707 +0200	commit: Commit with tags.
 1335258f70f45c6243bc674df830cd0ec7c3c714 90440bdc8eb3b2fa20bc578f411cf4b725ae0a25 David Navrkal <navrkald@gmail.com> 1571234561 +0200	checkout: moving from branch_with_tags to another_branch
+90440bdc8eb3b2fa20bc578f411cf4b725ae0a25 ef5f0683654427ff38d43836098f6336d73c4576 V Henzl <vhenzl@github.com> 1605853944 +1300	checkout: moving from another_branch to branch_with_multiline_msg
+ef5f0683654427ff38d43836098f6336d73c4576 4b4971e54a1cd05eab6c0ae32cf5cd330c9dcc41 V Henzl <vhenzl@github.com> 1605853950 +1300	commit: Commit with subject and body
+4b4971e54a1cd05eab6c0ae32cf5cd330c9dcc41 90440bdc8eb3b2fa20bc578f411cf4b725ae0a25 V Henzl <vhenzl@github.com> 1605854014 +1300	checkout: moving from branch_with_multiline_msg to another_branch
