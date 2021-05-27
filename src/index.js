@@ -21,16 +21,16 @@ export default class ServerlessGitVariables {
   constructor(serverless, options) {
     this.serverless = serverless
     this.resolvedValues = {}
-    const delegate = serverless.variables.getValueFromSource.bind(serverless.variables)
-
-    serverless.variables.getValueFromSource = (variableString) => {
-      if (variableString.startsWith(`${GIT_PREFIX}:`)) {
-        const variable = variableString.split(`${GIT_PREFIX}:`)[1]
-        return this._getValue(variable)
+    this.configurationVariablesSources = {
+      [GIT_PREFIX]: {
+        async resolve({address, params, resolveConfigurationProperty, options}) {
+          return {
+            value: await this._getValue(address),
+          }
+        },
       }
+    };
 
-      return delegate(variableString)
-    }
     this.hooks = {
       'after:package:initialize': this.exportGitVariables.bind(this),
       'before:offline:start': this.exportGitVariables.bind(this),
