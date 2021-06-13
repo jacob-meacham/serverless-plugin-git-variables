@@ -60,12 +60,12 @@
     "fs-extra": "9.0.1",
     "nyc": "15.1.0",
     "rimraf": "3.0.2",
-    "serverless": "1.17.0",
+    "serverless": "2.46.0",
     "tmp": "0.2.1"
   },
   "modules": true,
   "peerDependencies": {
-    "serverless": ">=1.16.0"
+    "serverless": ">=2"
   },
   "ava": {
     "require": [

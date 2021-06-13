@@ -21,26 +21,32 @@ export default class ServerlessGitVariables {
   constructor(serverless, options) {
     this.serverless = serverless
     this.resolvedValues = {}
-    const delegate = serverless.variables.getValueFromSource.bind(serverless.variables)
-
-    serverless.variables.getValueFromSource = (variableString) => {
-      if (variableString.startsWith(`${GIT_PREFIX}:`)) {
-        const variable = variableString.split(`${GIT_PREFIX}:`)[1]
-        return this._getValue(variable)
+    const getValue = this._getValue.bind(this)
+    this.configurationVariablesSources = {
+      [GIT_PREFIX]: {
+        async resolve({ address, params, resolveConfigurationProperty, options }) {
+          return {
+            value: await getValue(address)
+          }
+        }
       }
-
-      return delegate(variableString)
     }
+
+    // Kick this off optimistically on construction, and then also hook it when necessary
+    // Once resolved once, the call is a very fast
+    this.exportGitVariables()
+
     this.hooks = {
-      'after:package:initialize': this.exportGitVariables.bind(this),
-      'before:offline:start': this.exportGitVariables.bind(this),
-      'before:offline:start:init': this.exportGitVariables.bind(this)
+      'before:print:print': async() => this.exportGitVariables(),
+      'after:package:initialize': async() => this.exportGitVariables(),
+      'before:offline:start': async() => this.exportGitVariables(),
+      'before:offline:start:init': async() => this.exportGitVariables()
     }
   }
 
   async _getValue(variable) {
     if (this.resolvedValues[variable]) {
-      return Promise.resolve(this.resolvedValues[variable])
+      return this.resolvedValues[variable]
     }
 
     return this._getValueFromGit(variable)
