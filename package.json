@@ -34,8 +34,8 @@
   "scripts": {
     "lint": "eslint .",
     "eslint": "eslint",
-    "test": "nyc ava",
-    "test:watch": "ava --watch",
+    "test": "LANG=en_US nyc ava",
+    "test:watch": "LANG=en_US ava --watch",
     "build:node": "cross-env BABEL_ENV=production babel src --out-dir lib",
     "build": "npm run lint && npm run test && npm run build:node",
     "ci:coverage": "nyc report --reporter=text-lcov | coveralls"
