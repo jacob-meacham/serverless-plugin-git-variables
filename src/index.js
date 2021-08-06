@@ -5,7 +5,7 @@ import os from 'os'
 
 const GIT_PREFIX = 'git'
 
-async function _exec(cmd, options = { timeout: 1000 }) {
+async function _exec(cmd, options = { timeout: 10000 }) {
   return new Promise((resolve, reject) => {
     childProcess.exec(cmd, options, (err, stdout) => {
       if (err) {
