@@ -85,8 +85,11 @@ export default class ServerlessGitVariables {
         break
       }
       case 'repository': {
-        const pathName = await _exec('git config --get remote.origin.url')
-        value = path.basename(pathName, ".git")
+        const firstRemoteName = await _exec('git remote | head -1')
+        const remoteUrl = await _exec(
+          `git config --get remote.${firstRemoteName}.url`,
+        )
+        value = path.basename(remoteUrl, '.git')
         break
       }
       case 'tags':
