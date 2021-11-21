@@ -20,3 +20,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run ci:coverage
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
