@@ -3,12 +3,12 @@ import process from 'process'
 import tmp from 'tmp'
 import fs from 'fs-extra'
 import Serverless from 'serverless'
-import util from 'util';
+import util from 'util'
 import childProcess from 'child_process'
 
 import ServerlessGitVariables from '../src'
 
-const exec = util.promisify(childProcess.exec);
+const exec = util.promisify(childProcess.exec)
 
 function buildSls() {
   const sls = new Serverless({
