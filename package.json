@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-git-variables",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "engines": {
     "node": ">=12.0"
   },
@@ -34,11 +34,11 @@
   "scripts": {
     "lint": "eslint .",
     "eslint": "eslint",
-    "test": "nyc ava",
-    "test:watch": "ava --watch",
+    "test": "LANG=en_US nyc ava",
+    "test:watch": "LANG=en_US ava --watch",
     "build:node": "cross-env BABEL_ENV=production babel src --out-dir lib",
     "build": "npm run lint && npm run test && npm run build:node",
-    "ci:coverage": "nyc report --reporter=text-lcov | coveralls"
+    "ci:coverage": "nyc report --reporter=lcov"
   },
   "devDependencies": {
     "@ava/babel": "1.0.1",
@@ -46,9 +46,8 @@
     "@babel/core": "7.12.3",
     "@babel/preset-env": "7.12.1",
     "@babel/register": "7.12.1",
-    "ava": "3.13.0",
+    "ava": "3.15.0",
     "babel-plugin-add-module-exports": "1.0.4",
-    "coveralls": "3.1.0",
     "cross-env": "7.0.2",
     "eslint": "7.12.1",
     "eslint-config-standard": "16.0.1",
@@ -60,7 +59,7 @@
     "fs-extra": "9.0.1",
     "nyc": "15.1.0",
     "rimraf": "3.0.2",
-    "serverless": "1.17.0",
+    "serverless": "3.0.0-pre.b06e7add",
     "tmp": "0.2.1"
   },
   "modules": true,
