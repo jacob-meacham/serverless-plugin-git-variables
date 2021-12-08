@@ -5,22 +5,11 @@ import os from 'os'
 
 const GIT_PREFIX = 'git'
 
-async function _exec(cmd, options = { timeout: 10000 }) {
-  return new Promise((resolve, reject) => {
-    childProcess.exec(cmd, options, (err, stdout) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(stdout.trim())
-      }
-    })
-  })
-}
-
 export default class ServerlessGitVariables {
   constructor(serverless, options) {
     this.serverless = serverless
     this.resolvedValues = {}
+    this.options = { timeout: 10000 }
 
     // Back-compat support for Serverless v1
     if (serverless.variables && serverless.variables.getValueFromSource) {
@@ -36,9 +25,11 @@ export default class ServerlessGitVariables {
     }
 
     const getValue = this._getValue.bind(this)
+    const gitConfigOptions = this.options
     this.configurationVariablesSources = {
       [GIT_PREFIX]: {
-        async resolve({ address, params, resolveConfigurationProperty, options }) {
+        async resolve({ address, params, resolveVariable, resolveConfigurationProperty, options }) {
+          gitConfigOptions.timeout = await resolveVariable('self:custom.gitTimeout')
           return {
             value: await getValue(address)
           }
@@ -58,6 +49,19 @@ export default class ServerlessGitVariables {
     }
   }
 
+  async _exec(cmd) {
+    const options = this.options
+    return new Promise((resolve, reject) => {
+      childProcess.exec(cmd, options, (err, stdout) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(stdout.trim())
+        }
+      })
+    })
+  }
+
   async _getValue(variable) {
     if (this.resolvedValues[variable]) {
       return this.resolvedValues[variable]
@@ -70,50 +74,50 @@ export default class ServerlessGitVariables {
     let value = null
     switch (variable) {
       case 'describe':
-        value = await _exec('git describe --always')
+        value = await this._exec('git describe --always')
         break
       case 'describeLight':
-        value = await _exec('git describe --always --tags')
+        value = await this._exec('git describe --always --tags')
         break
       case 'sha1':
-        value = await _exec('git rev-parse --short HEAD')
+        value = await this._exec('git rev-parse --short HEAD')
         break
       case 'commit':
-        value = await _exec('git rev-parse HEAD')
+        value = await this._exec('git rev-parse HEAD')
         break
       case 'branch':
-        value = await _exec('git rev-parse --abbrev-ref HEAD')
+        value = await this._exec('git rev-parse --abbrev-ref HEAD')
         break
       case 'message':
-        value = await _exec('git log -1 --pretty=%B')
+        value = await this._exec('git log -1 --pretty=%B')
         break
       case 'messageSubject':
-        value = await _exec('git log -1 --pretty=%s')
+        value = await this._exec('git log -1 --pretty=%s')
         break
       case 'messageBody':
-        value = await _exec('git log -1 --pretty=%b')
+        value = await this._exec('git log -1 --pretty=%b')
         break
       case 'user':
-        value = await _exec('git config user.name')
+        value = await this._exec('git config user.name')
         break
       case 'email':
-        value = await _exec('git config user.email')
+        value = await this._exec('git config user.email')
         break
       case 'isDirty': {
-        const changes = await _exec('git diff --stat')
+        const changes = await this._exec('git diff --stat')
         value = `${changes.length > 0}`
         break
       }
       case 'repository': {
-        const pathName = await _exec('git rev-parse --show-toplevel')
+        const pathName = await this._exec('git rev-parse --show-toplevel')
         value = path.basename(pathName)
         break
       }
       case 'tags':
-        value = await _exec('git tag --points-at HEAD')
+        value = await this._exec('git tag --points-at HEAD')
         value = value.split(os.EOL).join('::')
         if (value === '') {
-          value = await _exec('git rev-parse --short HEAD')
+          value = await this._exec('git rev-parse --short HEAD')
         }
         break
       default:

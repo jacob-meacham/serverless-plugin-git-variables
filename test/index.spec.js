@@ -298,3 +298,43 @@ test.serial('Disabling export of env variables', async t => {
 
   t.is(func.tags, undefined)
 })
+
+test.serial('Setting Git timeout too short', async t => {
+  const sls = buildSls()
+  sls.service.custom.gitTimeout = 1
+  sls.service.custom.describe = '${git:describe}' // eslint-disable-line
+
+  const pluginInst = sls.pluginManager.getPlugins().filter((plugin) => plugin instanceof ServerlessGitVariables)[0]
+  const sleepCommand = 'node --eval "new Promise(r => setTimeout(r, 100000)).then(() => {console.log(\'done\')})"'
+  // Monkey Patch the _exec function to always run the above command.
+  const oldExec = pluginInst._exec.bind(pluginInst)
+  pluginInst._exec = function(cmd) {
+    return oldExec(sleepCommand)
+  }
+
+  await t.throwsAsync(() => {
+    return sls.variables.populateService()
+  })
+
+  pluginInst._exec = oldExec
+})
+
+test.serial('Setting Git timeout very long', async t => {
+  const sls = buildSls()
+  sls.service.custom.gitTimeout = 100000
+  sls.service.custom.describe = '${git:describe}' // eslint-disable-line
+
+  const pluginInst = sls.pluginManager.getPlugins().filter((plugin) => plugin instanceof ServerlessGitVariables)[0]
+  const sleepCommand = 'node --eval "new Promise(r => setTimeout(r, 1)).then(() => {console.log(\'git-describe-tag\')})"'
+  // Monkey Patch the _exec function to always run the above command.
+  const oldExec = pluginInst._exec.bind(pluginInst)
+  pluginInst._exec = function(cmd) {
+    return oldExec(sleepCommand)
+  }
+
+  await sls.variables.populateService()
+
+  t.is(sls.service.custom.describe, 'git-describe-tag')
+
+  pluginInst._exec = oldExec
+})
