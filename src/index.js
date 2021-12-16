@@ -105,8 +105,11 @@ export default class ServerlessGitVariables {
         break
       }
       case 'repository': {
-        const pathName = await _exec('git rev-parse --show-toplevel')
-        value = path.basename(pathName)
+        const firstRemoteName = await _exec('git remote | head -1')
+        const remoteUrl = await _exec(
+          `git config --get remote.${firstRemoteName}.url`,
+        )
+        value = path.basename(remoteUrl, '.git')
         break
       }
       case 'tags':
