@@ -59,7 +59,7 @@
     "fs-extra": "9.0.1",
     "nyc": "15.1.0",
     "rimraf": "3.0.2",
-    "serverless": "3.0.0-pre.b06e7add",
+    "serverless": "3.27.0",
     "tmp": "0.2.1"
   },
   "modules": true,
